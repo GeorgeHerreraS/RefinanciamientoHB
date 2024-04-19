@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:ns1="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd">
+    <pd:name>Process/SubProcess/Utilities/InicioCoordinador.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="ProcessName" type="xsd:string"/>
+                    <xsd:element name="Entrada" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:any processContents="lax"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="request_json" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="logHob">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Funcionalidad" type="xsd:string"/>
+                                <xsd:element name="RutCliente" type="xsd:string"/>
+                                <xsd:element name="CtaOrig" type="xsd:string"/>
+                                <xsd:element name="CtaDtn" type="xsd:string"/>
+                                <xsd:element name="TrnMonto" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <resultado>
+                <xsl:value-of select="'ok'"/>
+            </resultado>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="resultado" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>447</pd:endX>
+    <pd:endY>136</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/InicioCoordinador</pd:targetNamespace>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>299</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="$Start/root/ProcessName"/>
+                </Proceso>
+                <xsl:if test="exists($Start/root/request_json)">
+                    <Mensaje>
+                        <titulo>
+                            <xsl:value-of select="'JSON Entrada'"/>
+                        </titulo>
+                        <mensaje>
+                            <xsl:value-of select="normalize-space($Start/root/request_json)"/>
+                        </mensaje>
+                    </Mensaje>
+                </xsl:if>
+                <xsl:if test="exists($Start/root/Entrada)">
+                    <Mensaje>
+                        <titulo>
+                            <xsl:value-of select="'Salida Parse JSon'"/>
+                        </titulo>
+                        <mensaje>
+                            <xsl:value-of select="tib:render-xml($Start/root/Entrada/*, true(), false())"/>
+                        </mensaje>
+                    </Mensaje>
+                </xsl:if>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GrabaLogHob Inicio">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>302</pd:x>
+        <pd:y>139</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/GrabaLogHob.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <InicioCoordinador>
+                    <xsl:value-of select="true()"/>
+                </InicioCoordinador>
+                <xsl:choose>
+                    <xsl:when test="exists($Start/root/request_json)">
+                        <request_json>
+                            <xsl:value-of select="normalize-space($Start/root/request_json)"/>
+                        </request_json>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <TramaEntrada>
+                            <xsl:copy-of select="$Start/root/Entrada/*"/>
+                        </TramaEntrada>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <TramaSalida/>
+                <ResultadoAtomico>
+                    <xsl:value-of select="true()"/>
+                </ResultadoAtomico>
+                <ns2:Informacion>
+                    <ns2:Codigo>
+                        <xsl:value-of select="''"/>
+                    </ns2:Codigo>
+                    <ns2:Resultado>
+                        <xsl:value-of select="''"/>
+                    </ns2:Resultado>
+                    <ns2:Mensaje>
+                        <xsl:value-of select="''"/>
+                    </ns2:Mensaje>
+                </ns2:Informacion>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Set Info Recurso">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>138</pd:x>
+        <pd:y>136</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoRecurso.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <logHob>
+                <Funcionalidad>
+                    <xsl:value-of select="$Start/root/logHob/Funcionalidad"/>
+                </Funcionalidad>
+                <RutCliente>
+                    <xsl:value-of select="$Start/root/logHob/RutCliente"/>
+                </RutCliente>
+                <CtaOrig>
+                    <xsl:value-of select="$Start/root/logHob/CtaOrig"/>
+                </CtaOrig>
+                <CtaDtn>
+                    <xsl:value-of select="$Start/root/logHob/CtaDtn"/>
+                </CtaDtn>
+                <TrnMonto>
+                    <xsl:value-of select="$Start/root/logHob/TrnMonto"/>
+                </TrnMonto>
+            </logHob>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>GrabaLogHob Inicio</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Info Recurso</pd:from>
+        <pd:to>GrabaLogHob Inicio</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Set Info Recurso</pd:to>
+        <pd:xpathDescription/>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

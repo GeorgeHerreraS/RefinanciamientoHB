@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SoftokenConsultas.xsd"
+	 xmlns:ns0="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd"
+	 targetNamespace="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SoftokenConsultas.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="Informacion.xsd"/>
+	<xs:element name="Entrada">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RutCliente" type="xs:string" minOccurs="0"/>
+				<xs:element name="Funcionalidad" type="xs:string" minOccurs="0"/>
+				<xs:element name="transactionId" type="xs:string" minOccurs="0"/>
+				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Salida">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns0:Informacion"/>
+				<xs:choice minOccurs="0">
+					<xs:element name="transactionStatusResponse">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="transactionId" type="xs:string" minOccurs="0"/>
+								<xs:element name="status" type="xs:string" minOccurs="0"/>
+								<xs:element name="responseStatus" minOccurs="0">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="code" type="xs:string" minOccurs="0"/>
+											<xs:element name="description" type="xs:string" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="userTokenListResponse">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="TokenList">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="tokens" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+														<xs:element name="name" type="xs:string" minOccurs="0"/>
+														<xs:element name="state" type="xs:string" minOccurs="0"/>
+														<xs:element name="tokenGroup" type="xs:string" minOccurs="0"/>
+														<xs:element name="tokenType" type="xs:string" minOccurs="0"/>
+														<xs:element name="activationState" type="xs:string" minOccurs="0"/>
+														<xs:element name="loadDate" type="xs:string" minOccurs="0"/>
+														<xs:element name="lastUsedDate" type="xs:string" minOccurs="0"/>
+														<xs:element name="registrationDate" type="xs:string" minOccurs="0"/>
+														<xs:element name="mobilePlatform" type="xs:string" minOccurs="0"/>
+														<xs:element name="mobileVersion" type="xs:string" minOccurs="0"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="responseStatus">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="code" type="xs:string" minOccurs="0"/>
+											<xs:element name="description" type="xs:string" minOccurs="0"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

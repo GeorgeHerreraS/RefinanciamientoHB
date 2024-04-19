@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pfx9="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx2="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:ns="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallenge.xsd" xmlns:pfx3="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:pfx5="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SolicitaDesafio.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://xmlns.tibco.com/encodings/mime" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns4="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallengeResponse.xsd" xmlns:ns3="http://www.tibco.com/pe/EngineTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://itg.isban.cl/BackEndProcess/Resources/Schemas/Info.xsd" xmlns:ns5="http://itg.isban.cl/AppAtomicosWebMobile/Resources/Schemas/KP12.xsd" xmlns:ns8="http://superclave.segcan.isban.cl/xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns7="http://superclave.segcan.isban.cl" xmlns:ns13="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenActivation.xsd" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns9="http://itg.isban.cl/BackEndProcess/Resources/Schemas/BUN2.xsd" xmlns:ns12="http://itg.isban.cl/BackEndProcess/Resources/Schemas/authenticateChallenge.xsd" xmlns:ns11="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:ns10="http://itg.isban.cl/BackEndProcess/Resources/Schemas/INFO.xsd" xmlns:ns17="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd" xmlns:ns16="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/ValidaDesafio.xsd" xmlns:ns15="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenList" xmlns:ns14="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/transactionStatus.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SolicitaDesafio.xsd" schemaLocation="/Resources/Schemas/SolicitaDesafio.xsd"/>
+    <pd:name>Process/Main/Seguridad/CL1CO_CONSolicitaDesafio.process</pd:name>
+    <pd:description>Validacion Cliente - Tarjeta de Coordenadas</pd:description>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="request_msgJSon" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>37</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <response_msgJSon>
+            <xsl:value-of select="concat($Render-JSON/pfx:ActivityOutputClass/jsonString,$JSONSalidaCatch/root/jsonString)"/>
+        </response_msgJSon>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="response_msgJSon" type="xsd:string"/>
+    </pd:endType>
+    <pd:endX>966</pd:endX>
+    <pd:endY>140</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/AppPersonas2.0/Process/CL1CO_CONSolicitaDesafio</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1206</pd:x>
+        <pd:y>139</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=JSONRenderException namespace=http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions</fault>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Fin Coordinador">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>809</pd:x>
+        <pd:y>43</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/FinCoordinador.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/ns11:Informacion"/>
+                <Salida>
+                    <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/ns11:Informacion"/>
+                    <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/pfx5:Escalares"/>
+                </Salida>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JSONSalidaCatch">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1082</pd:x>
+        <pd:y>141</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/Catch.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Coordinador>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns3:ProcessContext/ProcessId)"/>
+                </Coordinador>
+                <Catch>
+                    <xsl:copy-of select="$Catch/exceptiondata"/>
+                </Catch>
+                <_error>
+                    <xsl:copy-of select="$_error/ns3:ErrorReport"/>
+                </_error>
+                <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/ns11:Informacion"/>
+                <InfoLogHob>
+                    <GrabaLogHob>
+                        <xsl:value-of select="string($Fin-Coordinador/root/ns11:Informacion)=''"/>
+                    </GrabaLogHob>
+                    <TramaEntrada>
+                        <xsl:copy-of select="$Parse-JSON/pfx:ActivityOutputClass/*"/>
+                    </TramaEntrada>
+                    <TramaSalida>
+                        <xsl:copy-of select="$Map-Respuesta/*"/>
+                    </TramaSalida>
+                    <AtomicoOk>
+                        <xsl:value-of select="false()"/>
+                    </AtomicoOk>
+                </InfoLogHob>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Respuesta">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>616</pd:x>
+        <pd:y>138</pd:y>
+        <config>
+            <element ref="pfx5:Salida"/>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="varFuncionalidad" select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:Funcionalidad"/>
+            <xsl:variable name="varSoftToken" select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken"/>
+            <pfx5:Salida>
+                <xsl:choose>
+                    <!--RESPONSE SUPER CLAVE-->
+                    <xsl:when test="(exists($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:Funcionalidad) and exists($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken)) and (&#xA;(tib:index-of('CreditoConsumo|ContratoLUF|PagoEnLinea|RecargaCelular|SuperGiro|TEFaTerceros',$varFuncionalidad)=-1) or&#xA;($varFuncionalidad='PagoEnLinea' and not(exists($varSoftToken/pfx5:PagoEnLinea))) or&#xA;($varFuncionalidad='RecargaCelular' and not(exists($varSoftToken/pfx5:RecargaCelular))) or&#xA;($varFuncionalidad='SuperGiro' and not(exists($varSoftToken/pfx5:SuperGiro))) or&#xA;($varFuncionalidad='TEFaTerceros' and not(exists($varSoftToken/pfx5:TEFaTerceros)))&#xA;or&#xA;($varFuncionalidad='CreditoConsumo' and not(exists($varSoftToken/pfx5:CreditoConsumo)))&#xA;)">
+                        <ns11:Informacion>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Codigo"/>
+                            </ns11:Codigo>
+                            <ns11:Resultado>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Resultado"/>
+                            </ns11:Resultado>
+                            <ns11:Mensaje>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Mensaje"/>
+                            </ns11:Mensaje>
+                        </ns11:Informacion>
+                    </xsl:when>
+                    <!--VALIDACION MONTO Y CUENTA-->
+                    <xsl:when test="exists($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:Funcionalidad) and &#xA;exists($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken) and &#xA;((&#xA;&#x9;tib:index-of('RecargaCelular|SuperGiro|TEFaTerceros',$varFuncionalidad)>0 and ( &#xA;&#x9;&#x9;string-length($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:Monto)=0 or&#xA;&#x9;&#x9;string-length($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:NumeroCuenta)=0&#xA;&#x9;)&#xA;) or (&#xA;&#x9;$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:Funcionalidad='PagoEnLinea'&#xA;&#x9;and string-length($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:NumeroCuenta)=0&#xA;))">
+                        <ns11:Informacion>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                            </ns11:Codigo>
+                            <ns11:Resultado>
+                                <xsl:value-of select="concat('Job-',$_processContext/ns3:ProcessContext/ProcessId,'; Para la Funcionalidad [',$varFuncionalidad,'], se debe informar campo',&#xA;(if ($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:Funcionalidad !='PagoEnLinea') then&#xA;&#x9;if (string-length($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:Monto)=0) then ' - /Entrada/SoftToken/Monto' else ''&#xA;else ''),&#xA;if (string-length($Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:NumeroCuenta)=0) then ' - /Entrada/SoftToken/NumeroCuenta' else '')"/>
+                            </ns11:Resultado>
+                            <ns11:Mensaje>
+                                <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/MensajeError"/>
+                            </ns11:Mensaje>
+                        </ns11:Informacion>
+                    </xsl:when>
+                    <!--ERROR VALIDANDO CARRO MULTIPAGO-->
+                    <!--RESPONSE SOFTTOKEN-->
+                    <xsl:when test="count($WS_SoftToken/root/ns11:Informacion)>0">
+                        <xsl:copy-of select="$WS_SoftToken/root/ns11:Informacion"/>
+                        <ns4:getChallengeResponse>
+                            <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:userId">
+                                <ns4:userId>
+                                    <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:userId"/>
+                                </ns4:userId>
+                            </xsl:if>
+                            <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:group">
+                                <ns4:group>
+                                    <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:group"/>
+                                </ns4:group>
+                            </xsl:if>
+                            <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:repositoryId">
+                                <ns4:repositoryId>
+                                    <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:repositoryId"/>
+                                </ns4:repositoryId>
+                            </xsl:if>
+                            <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:transactionid">
+                                <ns4:transactionid>
+                                    <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:transactionid"/>
+                                </ns4:transactionid>
+                            </xsl:if>
+                            <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:challengeType">
+                                <ns4:challengeType>
+                                    <xsl:value-of select="."/>
+                                </ns4:challengeType>
+                            </xsl:for-each>
+                            <ns4:ListChallenges>
+                                <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:ListChallenges/ns:token">
+                                    <ns4:token>
+                                        <xsl:if test="ns:userId">
+                                            <ns4:userId>
+                                                <xsl:value-of select="ns:userId"/>
+                                            </ns4:userId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:group">
+                                            <ns4:group>
+                                                <xsl:value-of select="ns:group"/>
+                                            </ns4:group>
+                                        </xsl:if>
+                                        <xsl:if test="ns:repositoryId">
+                                            <ns4:repositoryId>
+                                                <xsl:value-of select="ns:repositoryId"/>
+                                            </ns4:repositoryId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:serialNumber">
+                                            <ns4:serialNumber>
+                                                <xsl:value-of select="ns:serialNumber"/>
+                                            </ns4:serialNumber>
+                                        </xsl:if>
+                                        <xsl:if test="ns:nameSet">
+                                            <ns4:nameSet>
+                                                <xsl:value-of select="ns:nameSet"/>
+                                            </ns4:nameSet>
+                                        </xsl:if>
+                                        <xsl:if test="ns:state">
+                                            <ns4:state>
+                                                <xsl:value-of select="ns:state"/>
+                                            </ns4:state>
+                                        </xsl:if>
+                                        <xsl:for-each select="ns:challengeTypes">
+                                            <ns4:challengeTypes>
+                                                <xsl:value-of select="."/>
+                                            </ns4:challengeTypes>
+                                        </xsl:for-each>
+                                        <xsl:if test="ns:offlineChallengeQRCode">
+                                            <ns4:offlineChallengeQRCode>
+                                                <xsl:value-of select="ns:offlineChallengeQRCode"/>
+                                            </ns4:offlineChallengeQRCode>
+                                        </xsl:if>
+                                    </ns4:token>
+                                </xsl:for-each>
+                                <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:ListChallenges/ns:customs">
+                                    <ns4:customs>
+                                        <xsl:if test="ns:userId">
+                                            <ns4:userId>
+                                                <xsl:value-of select="ns:userId"/>
+                                            </ns4:userId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:group">
+                                            <ns4:group>
+                                                <xsl:value-of select="ns:group"/>
+                                            </ns4:group>
+                                        </xsl:if>
+                                        <xsl:if test="ns:repositoryId">
+                                            <ns4:repositoryId>
+                                                <xsl:value-of select="ns:repositoryId"/>
+                                            </ns4:repositoryId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:serialNumber">
+                                            <ns4:serialNumber>
+                                                <xsl:value-of select="ns:serialNumber"/>
+                                            </ns4:serialNumber>
+                                        </xsl:if>
+                                        <xsl:if test="ns:nameSet">
+                                            <ns4:nameSet>
+                                                <xsl:value-of select="ns:nameSet"/>
+                                            </ns4:nameSet>
+                                        </xsl:if>
+                                        <xsl:if test="ns:state">
+                                            <ns4:state>
+                                                <xsl:value-of select="ns:state"/>
+                                            </ns4:state>
+                                        </xsl:if>
+                                        <xsl:for-each select="ns:challengeTypes">
+                                            <ns4:challengeTypes>
+                                                <xsl:value-of select="."/>
+                                            </ns4:challengeTypes>
+                                        </xsl:for-each>
+                                    </ns4:customs>
+                                </xsl:for-each>
+                                <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:ListChallenges/ns:card">
+                                    <ns4:card>
+                                        <xsl:if test="ns:userId">
+                                            <ns4:userId>
+                                                <xsl:value-of select="ns:userId"/>
+                                            </ns4:userId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:group">
+                                            <ns4:group>
+                                                <xsl:value-of select="ns:group"/>
+                                            </ns4:group>
+                                        </xsl:if>
+                                        <xsl:if test="ns:repositoryId">
+                                            <ns4:repositoryId>
+                                                <xsl:value-of select="ns:repositoryId"/>
+                                            </ns4:repositoryId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:serialNumber">
+                                            <ns4:serialNumber>
+                                                <xsl:value-of select="ns:serialNumber"/>
+                                            </ns4:serialNumber>
+                                        </xsl:if>
+                                        <xsl:if test="ns:nameSet">
+                                            <ns4:nameSet>
+                                                <xsl:value-of select="ns:nameSet"/>
+                                            </ns4:nameSet>
+                                        </xsl:if>
+                                        <xsl:if test="ns:state">
+                                            <ns4:state>
+                                                <xsl:value-of select="ns:state"/>
+                                            </ns4:state>
+                                        </xsl:if>
+                                        <xsl:for-each select="ns:challengeTypes">
+                                            <ns4:challengeTypes>
+                                                <xsl:value-of select="."/>
+                                            </ns4:challengeTypes>
+                                        </xsl:for-each>
+                                        <xsl:if test="ns:listCoordenates">
+                                            <ns4:listCoordenates>
+                                                <xsl:value-of select="ns:listCoordenates"/>
+                                            </ns4:listCoordenates>
+                                        </xsl:if>
+                                    </ns4:card>
+                                </xsl:for-each>
+                                <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:ListChallenges/ns:password">
+                                    <ns4:password>
+                                        <xsl:if test="ns:userId">
+                                            <ns4:userId>
+                                                <xsl:value-of select="ns:userId"/>
+                                            </ns4:userId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:group">
+                                            <ns4:group>
+                                                <xsl:value-of select="ns:group"/>
+                                            </ns4:group>
+                                        </xsl:if>
+                                        <xsl:if test="ns:repositoryId">
+                                            <ns4:repositoryId>
+                                                <xsl:value-of select="ns:repositoryId"/>
+                                            </ns4:repositoryId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:serialNumber">
+                                            <ns4:serialNumber>
+                                                <xsl:value-of select="ns:serialNumber"/>
+                                            </ns4:serialNumber>
+                                        </xsl:if>
+                                        <xsl:if test="ns:nameSet">
+                                            <ns4:nameSet>
+                                                <xsl:value-of select="ns:nameSet"/>
+                                            </ns4:nameSet>
+                                        </xsl:if>
+                                        <xsl:if test="ns:state">
+                                            <ns4:state>
+                                                <xsl:value-of select="ns:state"/>
+                                            </ns4:state>
+                                        </xsl:if>
+                                        <xsl:for-each select="ns:challengeTypes">
+                                            <ns4:challengeTypes>
+                                                <xsl:value-of select="."/>
+                                            </ns4:challengeTypes>
+                                        </xsl:for-each>
+                                        <xsl:if test="ns:expirateDate">
+                                            <ns4:expirateDate>
+                                                <xsl:value-of select="ns:expirateDate"/>
+                                            </ns4:expirateDate>
+                                        </xsl:if>
+                                        <xsl:if test="ns:changeRequired">
+                                            <ns4:changeRequired>
+                                                <xsl:value-of select="ns:changeRequired"/>
+                                            </ns4:changeRequired>
+                                        </xsl:if>
+                                    </ns4:password>
+                                </xsl:for-each>
+                                <xsl:for-each select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:ListChallenges/ns:otp">
+                                    <ns4:otp>
+                                        <xsl:if test="ns:userId">
+                                            <ns4:userId>
+                                                <xsl:value-of select="ns:userId"/>
+                                            </ns4:userId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:group">
+                                            <ns4:group>
+                                                <xsl:value-of select="ns:group"/>
+                                            </ns4:group>
+                                        </xsl:if>
+                                        <xsl:if test="ns:repositoryId">
+                                            <ns4:repositoryId>
+                                                <xsl:value-of select="ns:repositoryId"/>
+                                            </ns4:repositoryId>
+                                        </xsl:if>
+                                        <xsl:if test="ns:serialNumber">
+                                            <ns4:serialNumber>
+                                                <xsl:value-of select="ns:serialNumber"/>
+                                            </ns4:serialNumber>
+                                        </xsl:if>
+                                        <xsl:if test="ns:nameSet">
+                                            <ns4:nameSet>
+                                                <xsl:value-of select="ns:nameSet"/>
+                                            </ns4:nameSet>
+                                        </xsl:if>
+                                        <xsl:if test="ns:state">
+                                            <ns4:state>
+                                                <xsl:value-of select="ns:state"/>
+                                            </ns4:state>
+                                        </xsl:if>
+                                        <xsl:for-each select="ns:challengeTypes">
+                                            <ns4:challengeTypes>
+                                                <xsl:value-of select="."/>
+                                            </ns4:challengeTypes>
+                                        </xsl:for-each>
+                                    </ns4:otp>
+                                </xsl:for-each>
+                            </ns4:ListChallenges>
+                            <ns4:responseStatus>
+                                <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:responseStatus/ns:code">
+                                    <ns4:code>
+                                        <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:responseStatus/ns:code"/>
+                                    </ns4:code>
+                                </xsl:if>
+                                <xsl:if test="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:responseStatus/ns:description">
+                                    <ns4:description>
+                                        <xsl:value-of select="$WS_SoftToken/root/ns:getChallengeResponse/ns:OUTPUT/ns:responseStatus/ns:description"/>
+                                    </ns4:description>
+                                </xsl:if>
+                            </ns4:responseStatus>
+                        </ns4:getChallengeResponse>
+                    </xsl:when>
+                    <!--ERROR VALIDANDO CUENTA CLIENTE-->
+                    <!--ERROR VALIDANDO CUENTA DESTINO-->
+                    <xsl:otherwise>
+                        <ns11:Informacion>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Codigo"/>
+                            </ns11:Codigo>
+                            <ns11:Resultado>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Resultado"/>
+                            </ns11:Resultado>
+                            <ns11:Mensaje>
+                                <xsl:value-of select="$WS_SoftToken/root/ns11:Informacion/ns11:Mensaje"/>
+                            </ns11:Mensaje>
+                        </ns11:Informacion>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </pfx5:Salida>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>40</pd:x>
+        <pd:y>140</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ValidateOutputEnable>false</ValidateOutputEnable>
+            <ActivityOutputEditor ref="pfx5:Body"/>
+        </config>
+        <pd:inputBindings>
+            <pfx:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/request_msgJSon"/>
+                </jsonString>
+            </pfx:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>736</pd:x>
+        <pd:y>224</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ActivityInputEditor ref="pfx5:Salida"/>
+        </config>
+        <pd:inputBindings>
+            <pfx:ActivityInputClass>
+                <xsl:copy-of select="$Map-Respuesta/pfx5:Salida"/>
+            </pfx:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="WS_SoftToken">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>463</pd:x>
+        <pd:y>137</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Atomicos/WS_SoftToken.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <getChallenge>
+                    <xsl:value-of select="true()"/>
+                </getChallenge>
+                <challengeType>
+                    <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:TipoDesafio"/>
+                </challengeType>
+                <RutCliente>
+                    <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:RutCliente"/>
+                </RutCliente>
+                <transactionData>
+                    <Monto>
+                        <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:Monto"/>
+                    </Monto>
+                    <TipoCuenta>
+                        <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:CreditoConsumo/pfx5:TipoCuenta"/>
+                    </TipoCuenta>
+                    <NroCuenta>
+                        <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:NumeroCuenta"/>
+                    </NroCuenta>
+                    <CreditoConsumo>
+                        <Nombre>
+                            <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:CreditoConsumo/pfx5:NombreCliente"/>
+                        </Nombre>
+                        <MontoLD>
+                            <xsl:value-of select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/pfx5:Entrada/pfx5:SoftToken/pfx5:CreditoConsumo/pfx5:MontoLD"/>
+                        </MontoLD>
+                    </CreditoConsumo>
+                </transactionData>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SetVariable">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>309</pd:x>
+        <pd:y>138</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoCabecera.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <xsl:for-each select="$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/ns17:Cabecera">
+                <cabecera>
+                    <xsl:for-each select="ns17:HOST">
+                        <HOST>
+                            <USUARIO-ALT>
+                                <xsl:value-of select="ns17:USUARIO-ALT"/>
+                            </USUARIO-ALT>
+                            <TERMINAL-ALT>
+                                <xsl:value-of select="ns17:TERMINAL-ALT"/>
+                            </TERMINAL-ALT>
+                            <CANAL-ID>
+                                <xsl:value-of select="ns17:CANAL-ID"/>
+                            </CANAL-ID>
+                        </HOST>
+                    </xsl:for-each>
+                    <CanalFisico>
+                        <xsl:value-of select="ns17:CanalFisico"/>
+                    </CanalFisico>
+                    <CanalLogico>
+                        <xsl:value-of select="ns17:CanalLogico"/>
+                    </CanalLogico>
+                    <RutCliente>
+                        <xsl:value-of select="ns17:RutCliente"/>
+                    </RutCliente>
+                    <RutUsuario>
+                        <xsl:value-of select="ns17:RutUsuario"/>
+                    </RutUsuario>
+                    <IpCliente>
+                        <xsl:value-of select="ns17:IpCliente"/>
+                    </IpCliente>
+                    <InfoDispositivo>
+                        <xsl:value-of select="ns17:InfoDispositivo"/>
+                    </InfoDispositivo>
+                    <InfoDataPower>
+                        <xsl:value-of select="ns17:InfoDataPower"/>
+                    </InfoDataPower>
+                    <InfoArquitectura>
+                        <xsl:value-of select="ns17:InfoArquitectura"/>
+                    </InfoArquitectura>
+                    <InfoGeneral>
+                        <NumeroServidor>
+                            <xsl:value-of select="ns17:InfoGeneral"/>
+                        </NumeroServidor>
+                    </InfoGeneral>
+                </cabecera>
+            </xsl:for-each>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogEntrada">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>171</pd:x>
+        <pd:y>139</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <pfx3:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;Entrada Coordinador Solicitud Desafio | rutCliente: [&quot;,$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/ns17:Cabecera/ns17:RutCliente,&quot;] | canalLogico: [&quot;,$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/ns17:Cabecera/ns17:CanalLogico,&quot;] | idSolicitud: [&quot;,&quot;&quot;,&quot;] | idOrigen: [&quot;,&quot;&quot;,&quot;] | Mensage: &quot;, $Start/request_msgJSon)"/>
+                </message>
+            </pfx3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogSalida">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>850</pd:x>
+        <pd:y>223</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <pfx3:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;Salida Coordinador ContrataCreditoConsumo | rutCliente: [&quot;,$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/ns17:Cabecera/ns17:RutCliente,&quot;] | canalLogico: [&quot;,$Parse-JSON/pfx:ActivityOutputClass/pfx5:Body/ns17:Cabecera/ns17:CanalLogico,&quot;] | idSolicitud: [&quot;,&quot;&quot;,&quot;] | idOrigen: [&quot;,&quot;&quot;,&quot;] | Mensage: &quot;,$Render-JSON/pfx:ActivityOutputClass/jsonString)"/>
+                </message>
+            </pfx3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>LogEntrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Respuesta</pd:from>
+        <pd:to>Fin Coordinador</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>JSONSalidaCatch</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JSONSalidaCatch</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Fin Coordinador</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>WS_SoftToken</pd:from>
+        <pd:to>Map Respuesta</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Respuesta</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>LogSalida</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SetVariable</pd:from>
+        <pd:to>WS_SoftToken</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogEntrada</pd:from>
+        <pd:to>SetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogSalida</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

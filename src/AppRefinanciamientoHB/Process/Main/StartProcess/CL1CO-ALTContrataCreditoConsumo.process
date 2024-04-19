@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns9="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd" xmlns:ns5="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns6="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/INFO.xsd" xmlns:ns10="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/ValidaDesafio.xsd" xmlns:ns7="http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions" xmlns:pfx="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/CO_DepositoCheques.xsd" xmlns:ns11="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/INFO.xsd" xmlns:ns8="http://www.tibco.com/pe/EngineTypes" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:ns1="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/Datos-Arquitectura.xsd" xmlns:ns4="https://itg.santander.cl/AppATOMinibanco/Resources/Schemas/INFO.xsd" xmlns:ns3="https://itg.santander.cl/AppATOMinibanco/Resources/Schemas/BJAN.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pfx5="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/CO_AnulacionDepositoCheques.xsd" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:pfx4="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx3="https://itg.santander.cl/AppATOMinibanco/WSDL/wsCL1MDBJAN-ALTAnuDepositoChequeATMBco" xmlns:pfx2="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/LogHob_v1_0.xsd" xmlns:pfx8="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:pfx7="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/CO_ContrataCreditoConsumo.xsd" xmlns:pfx6="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/CALLCO_FO.xsd">
+    <xsd:import namespace="http://itg.santander.cl/AppCOOMinibanco/Resources/Schemas/CO_AnulacionDepositoCheques.xsd"/>
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/CO_ContrataCreditoConsumo.xsd" schemaLocation="/Resources/Schemas/CO_ContrataCreditoConsumo.xsd"/>
+    <pd:name>Process/Main/StartProcess/CL1CO-ALTContrataCreditoConsumo.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="INPUT">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>31</pd:startX>
+    <pd:startY>213</pd:startY>
+    <pd:returnBindings>
+        <OUTPUT>
+            <xsl:choose>
+                <xsl:when test="$Render-JSON/ns2:ActivityOutputClass !=''">
+                    <String>
+                        <xsl:value-of select="$Render-JSON/ns2:ActivityOutputClass/jsonString"/>
+                    </String>
+                </xsl:when>
+                <xsl:otherwise>
+                    <String>
+                        <xsl:value-of select="$Render-JSON-1/ns2:ActivityOutputClass/jsonString"/>
+                    </String>
+                </xsl:otherwise>
+            </xsl:choose>
+        </OUTPUT>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="OUTPUT">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>868</pd:endX>
+    <pd:endY>218</pd:endY>
+    <pd:errorSchemas>
+        <Error>
+            <xsd:element name="Output">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="String" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </Error>
+    </pd:errorSchemas>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.santander.cl/AppRefinanciamientoHB/Main/StartProcess/CL1CO-ALTContrataCreditoConsumo</pd:targetNamespace>
+    <pd:activity name="callCO-FO">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>566</pd:x>
+        <pd:y>212</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Atomicos/callCO-FO.process</processName>
+        </config>
+        <pd:inputBindings>
+            <pfx6:INPUT>
+                <pfx6:canalLogico>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:CanalLogico"/>
+                </pfx6:canalLogico>
+                <pfx6:usuarioAltair>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:HOST/ns9:USUARIO-ALT"/>
+                </pfx6:usuarioAltair>
+                <pfx6:entidad>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:entidad"/>
+                </pfx6:entidad>
+                <pfx6:idOrigen>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:idOrigen"/>
+                </pfx6:idOrigen>
+                <pfx6:idSolicitud>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:idSolicitud"/>
+                </pfx6:idSolicitud>
+                <pfx6:fechaConsulta>
+                    <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:fechaConsulta"/>
+                </pfx6:fechaConsulta>
+            </pfx6:INPUT>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>421</pd:x>
+        <pd:y>363</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="CL1CO-VALDesafio-CreaOTP">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>371</pd:x>
+        <pd:y>213</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Atomicos/CL1CO-VALDesafio-CreaOTP.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <cabecera>
+                    <HOST>
+                        <USUARIO-ALT>
+                            <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:HOST/ns9:USUARIO-ALT"/>
+                        </USUARIO-ALT>
+                        <TERMINAL-ALT>
+                            <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:HOST/ns9:TERMINAL-ALT"/>
+                        </TERMINAL-ALT>
+                        <CANAL-ID>
+                            <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:HOST/ns9:CANAL-ID"/>
+                        </CANAL-ID>
+                    </HOST>
+                    <CanalFisico>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:CanalFisico"/>
+                    </CanalFisico>
+                    <CanalLogico>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:CanalLogico"/>
+                    </CanalLogico>
+                    <RutCliente>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:RutCliente"/>
+                    </RutCliente>
+                    <RutUsuario>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:RutUsuario"/>
+                    </RutUsuario>
+                    <IpCliente>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:IpCliente"/>
+                    </IpCliente>
+                    <InfoDispositivo>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:InfoDispositivo"/>
+                    </InfoDispositivo>
+                    <InfoDataPower>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:InfoDataPower"/>
+                    </InfoDataPower>
+                    <InfoArquitectura>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/ns9:Cabecera/ns9:InfoArquitectura"/>
+                    </InfoArquitectura>
+                </cabecera>
+                <ns10:Validar_Desafio_Request>
+                    <ns10:RutCliente>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:RutCliente"/>
+                    </ns10:RutCliente>
+                    <ns10:MatrizDesafio>
+                        <xsl:value-of select="$Parse-JSON/ns2:ActivityOutputClass/pfx7:CO_ContrataCreditoConsumo_Request/pfx7:INPUT/pfx7:MatrizDesafio"/>
+                    </ns10:MatrizDesafio>
+                </ns10:Validar_Desafio_Request>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Generate-Error-CallCO-FO">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>565</pd:x>
+        <pd:y>84</pd:y>
+        <config>
+            <faultName>Error</faultName>
+        </config>
+        <pd:inputBindings>
+            <pfx4:ActivityInput>
+                <data>
+                    <Output>
+                        <String>
+                            <xsl:value-of select="tib:render-xml($callCO-FO/pfx6:CallCoFo_Response)"/>
+                        </String>
+                    </Output>
+                </data>
+            </pfx4:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GenerateErrorValidaDesafio">
+        <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+        <pd:resourceType>ae.activities.throw</pd:resourceType>
+        <pd:x>372</pd:x>
+        <pd:y>78</pd:y>
+        <config>
+            <faultName>Error</faultName>
+        </config>
+        <pd:inputBindings>
+            <pfx4:ActivityInput>
+                <data>
+                    <Output>
+                        <String>
+                            <xsl:value-of select="tib:render-xml($CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response)"/>
+                        </String>
+                    </Output>
+                </data>
+            </pfx4:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogError">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>871</pd:x>
+        <pd:y>363</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <message>
+                    <xsl:value-of select="$Map-Data/pfx7:ContrataCreditoConsumo_Response/ns11:INFO/ns11:Descripcion"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="$Map-Data/pfx7:ContrataCreditoConsumo_Response/ns11:INFO/ns11:Codigo"/>
+                </msgCode>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogEntrada">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>135</pd:x>
+        <pd:y>213</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;Entrada Coordinador BJAN: &quot;, $Start/INPUT/String)"/>
+                </message>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LogSalida">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>787</pd:x>
+        <pd:y>214</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat('Salida Coordinador ContrataCreditoConsumo: ', tib:render-xml($CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response), tib:render-xml($callCO-FO/pfx6:CallCoFo_Response))"/>
+                </message>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>567</pd:x>
+        <pd:y>363</pd:y>
+        <config>
+            <element ref="pfx7:ContrataCreditoConsumo_Response"/>
+        </config>
+        <pd:inputBindings>
+            <xsl:choose>
+                <xsl:when test="count($_error_Parse-JSON/ActivityErrors) > 0">
+                    <xsl:choose>
+                        <xsl:when test="count($_error_Parse-JSON/ActivityErrors/ns7:JSONParseException)>0">
+                            <pfx7:ContrataCreditoConsumo_Response>
+                                <ns11:INFO>
+                                    <ns11:Codigo>
+                                        <xsl:value-of select="$_error_Parse-JSON/ActivityErrors/ns7:JSONParseException/msgCode"/>
+                                    </ns11:Codigo>
+                                    <ns11:Descripcion>
+                                        <xsl:value-of select="$_error_Parse-JSON/ActivityErrors/ns7:JSONParseException/msg"/>
+                                    </ns11:Descripcion>
+                                </ns11:INFO>
+                            </pfx7:ContrataCreditoConsumo_Response>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <pfx7:ContrataCreditoConsumo_Response>
+                                <ns11:INFO>
+                                    <ns11:Codigo>
+                                        <xsl:value-of select="$_error_Parse-JSON/ActivityErrors/ns7:ValidationException/msgCode"/>
+                                    </ns11:Codigo>
+                                    <ns11:Descripcion>
+                                        <xsl:value-of select="$_error_Parse-JSON/ActivityErrors/ns7:ValidationException/msg"/>
+                                    </ns11:Descripcion>
+                                </ns11:INFO>
+                            </pfx7:ContrataCreditoConsumo_Response>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:when test="count($_error_GenerateErrorValidaDesafio/Output/String) > 0">
+                    <pfx7:ContrataCreditoConsumo_Response>
+                        <ns11:INFO>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/pfx8:Informacion/pfx8:Codigo"/>
+                            </ns11:Codigo>
+                            <ns11:Descripcion>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/pfx8:Informacion/pfx8:Resultado"/>
+                            </ns11:Descripcion>
+                        </ns11:INFO>
+                        <pfx7:OUTPUT>
+                            <pfx7:Escalares>
+                                <pfx7:IntentosFallidosRestantes>
+                                    <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:IntentosFallidosRestantes"/>
+                                </pfx7:IntentosFallidosRestantes>
+                            </pfx7:Escalares>
+                        </pfx7:OUTPUT>
+                    </pfx7:ContrataCreditoConsumo_Response>
+                </xsl:when>
+                <xsl:when test="count($_error_Generate-Error-CallCO-FO/Output/String) > 0">
+                    <pfx7:ContrataCreditoConsumo_Response>
+                        <ns11:INFO>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx8:Informacion/pfx8:Codigo"/>
+                            </ns11:Codigo>
+                            <ns11:Descripcion>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx8:Informacion/pfx8:Mensaje"/>
+                            </ns11:Descripcion>
+                        </ns11:INFO>
+                    </pfx7:ContrataCreditoConsumo_Response>
+                </xsl:when>
+                <xsl:when test="count($_error_Render-JSON) > 0">
+                    <pfx7:ContrataCreditoConsumo_Response>
+                        <ns11:INFO>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$_error_Render-JSON/ns7:JSONRenderException/msgCode"/>
+                            </ns11:Codigo>
+                            <ns11:Descripcion>
+                                <xsl:value-of select="$_error_Render-JSON/ns7:JSONRenderException/msg"/>
+                            </ns11:Descripcion>
+                        </ns11:INFO>
+                    </pfx7:ContrataCreditoConsumo_Response>
+                </xsl:when>
+                <xsl:otherwise>
+                    <pfx7:ContrataCreditoConsumo_Response>
+                        <ns11:INFO>
+                            <ns11:Codigo>
+                                <xsl:value-of select="$_error/ns8:ErrorReport/MsgCode"/>
+                            </ns11:Codigo>
+                            <ns11:Descripcion>
+                                <xsl:value-of select="$_error/ns8:ErrorReport/StackTrace"/>
+                            </ns11:Descripcion>
+                        </ns11:INFO>
+                    </pfx7:ContrataCreditoConsumo_Response>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>242</pd:x>
+        <pd:y>213</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityOutputEditor ref="pfx7:CO_ContrataCreditoConsumo_Request"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/INPUT/String"/>
+                </jsonString>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>697</pd:x>
+        <pd:y>215</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityInputEditor ref="pfx7:ContrataCreditoConsumo_Response"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <pfx7:ContrataCreditoConsumo_Response>
+                    <ns11:INFO>
+                        <ns11:Codigo>
+                            <xsl:value-of select="$_globalVariables/ns5:GlobalVariables/INFO/CodigoOk"/>
+                        </ns11:Codigo>
+                        <ns11:Descripcion>
+                            <xsl:value-of select="$_globalVariables/ns5:GlobalVariables/INFO/MensajeOk"/>
+                        </ns11:Descripcion>
+                    </ns11:INFO>
+                    <pfx7:OUTPUT>
+                        <pfx7:Escalares>
+                            <xsl:if test="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:email">
+                                <pfx7:email>
+                                    <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:email"/>
+                                </pfx7:email>
+                            </xsl:if>
+                            <pfx7:valorCuota>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:ValorCuota"/>
+                            </pfx7:valorCuota>
+                            <pfx7:cantidadCuotas>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:cantidadCuotas"/>
+                            </pfx7:cantidadCuotas>
+                            <pfx7:montoBruto>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:montoBruto"/>
+                            </pfx7:montoBruto>
+                            <pfx7:montoLiquido>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:montoLiquido"/>
+                            </pfx7:montoLiquido>
+                            <pfx7:montoAPagar>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:montoAPagar"/>
+                            </pfx7:montoAPagar>
+                            <pfx7:fechaPrimerVencimiento>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:fechaPrimerVencimiento"/>
+                            </pfx7:fechaPrimerVencimiento>
+                            <pfx7:CAE>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:CAE"/>
+                            </pfx7:CAE>
+                            <pfx7:tasaMensual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:tasaMensual"/>
+                            </pfx7:tasaMensual>
+                            <pfx7:tasaAnual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:tasaAnual"/>
+                            </pfx7:tasaAnual>
+                            <pfx7:impuesto>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:impuesto"/>
+                            </pfx7:impuesto>
+                            <pfx7:gastoNotarial>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:gastoNotarial"/>
+                            </pfx7:gastoNotarial>
+                            <pfx7:gastosTotales>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:gastosTotales"/>
+                            </pfx7:gastosTotales>
+                            <pfx7:seguroDesgravamenMensual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroDesgravamenMensual"/>
+                            </pfx7:seguroDesgravamenMensual>
+                            <pfx7:seguroDesgravamenAnual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroDesgravamenAnual"/>
+                            </pfx7:seguroDesgravamenAnual>
+                            <pfx7:seguroCesantiaMensual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroCesantiaMensual"/>
+                            </pfx7:seguroCesantiaMensual>
+                            <pfx7:seguroCesantiaAnual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroCesantiaAnual"/>
+                            </pfx7:seguroCesantiaAnual>
+                            <pfx7:seguroVidaMensual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroVidaMensual"/>
+                            </pfx7:seguroVidaMensual>
+                            <pfx7:seguroVidaAnual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:seguroVidaAnual"/>
+                            </pfx7:seguroVidaAnual>
+                            <pfx7:totalSeguroMensual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:totalSeguroMensual"/>
+                            </pfx7:totalSeguroMensual>
+                            <pfx7:totalSeguroAnual>
+                                <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:resumenCredito/pfx6:totalSeguroAnual"/>
+                            </pfx7:totalSeguroAnual>
+                            <pfx7:GlosaRespuesta>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:GlosaRespuesta"/>
+                            </pfx7:GlosaRespuesta>
+                            <pfx7:IntentosFallidosRestantes>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:IntentosFallidosRestantes"/>
+                            </pfx7:IntentosFallidosRestantes>
+                            <pfx7:Resultado>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:Resultado"/>
+                            </pfx7:Resultado>
+                            <pfx7:CodigoOTP>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:CodigoOTP"/>
+                            </pfx7:CodigoOTP>
+                            <pfx7:IdTrxOTP>
+                                <xsl:value-of select="$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/ns10:Salida/ns10:IdTrxOTP"/>
+                            </pfx7:IdTrxOTP>
+                        </pfx7:Escalares>
+                        <pfx7:rebajaCuposYCierreProductos>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:rebajaCuposYCierreProductos/pfx6:productoMP">
+                                <pfx7:productoMP>
+                                    <xsl:if test="pfx6:numeroTarjeta">
+                                        <pfx7:numeroTarjeta>
+                                            <xsl:value-of select="pfx6:numeroTarjeta"/>
+                                        </pfx7:numeroTarjeta>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:descripcion">
+                                        <pfx7:descripcion>
+                                            <xsl:value-of select="pfx6:descripcion"/>
+                                        </pfx7:descripcion>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoActualPesos">
+                                        <pfx7:cupoActualPesos>
+                                            <xsl:value-of select="pfx6:cupoActualPesos"/>
+                                        </pfx7:cupoActualPesos>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoNuevoPesos">
+                                        <pfx7:cupoNuevoPesos>
+                                            <xsl:value-of select="pfx6:cupoNuevoPesos"/>
+                                        </pfx7:cupoNuevoPesos>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoActualDolar">
+                                        <pfx7:cupoActualDolar>
+                                            <xsl:value-of select="pfx6:cupoActualDolar"/>
+                                        </pfx7:cupoActualDolar>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoNuevoDolar">
+                                        <pfx7:cupoNuevoDolar>
+                                            <xsl:value-of select="pfx6:cupoNuevoDolar"/>
+                                        </pfx7:cupoNuevoDolar>
+                                    </xsl:if>
+                                </pfx7:productoMP>
+                            </xsl:for-each>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:rebajaCuposYCierreProductos/pfx6:productoBG">
+                                <pfx7:productoBG>
+                                    <xsl:if test="pfx6:descripcion">
+                                        <pfx7:descripcion>
+                                            <xsl:value-of select="pfx6:descripcion"/>
+                                        </pfx7:descripcion>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:contrato">
+                                        <pfx7:contrato>
+                                            <xsl:value-of select="pfx6:contrato"/>
+                                        </pfx7:contrato>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoActualPesos">
+                                        <pfx7:cupoActualPesos>
+                                            <xsl:value-of select="pfx6:cupoActualPesos"/>
+                                        </pfx7:cupoActualPesos>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:cupoNuevoPesos">
+                                        <pfx7:cupoNuevoPesos>
+                                            <xsl:value-of select="pfx6:cupoNuevoPesos"/>
+                                        </pfx7:cupoNuevoPesos>
+                                    </xsl:if>
+                                </pfx7:productoBG>
+                            </xsl:for-each>
+                        </pfx7:rebajaCuposYCierreProductos>
+                        <pfx7:deudasARefinanciar>
+                            <xsl:if test="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:valorDolar">
+                                <pfx7:valorDolar>
+                                    <xsl:value-of select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:valorDolar"/>
+                                </pfx7:valorDolar>
+                            </xsl:if>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:listaUG">
+                                <pfx7:listaUG>
+                                    <xsl:if test="pfx6:descripcion">
+                                        <pfx7:descripcion>
+                                            <xsl:value-of select="pfx6:descripcion"/>
+                                        </pfx7:descripcion>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:contrato">
+                                        <pfx7:contrato>
+                                            <xsl:value-of select="pfx6:contrato"/>
+                                        </pfx7:contrato>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaTotal">
+                                        <pfx7:deudaTotal>
+                                            <xsl:value-of select="pfx6:deudaTotal"/>
+                                        </pfx7:deudaTotal>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaPrepago">
+                                        <pfx7:deudaPrepago>
+                                            <xsl:value-of select="pfx6:deudaPrepago"/>
+                                        </pfx7:deudaPrepago>
+                                    </xsl:if>
+                                </pfx7:listaUG>
+                            </xsl:for-each>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:listaBG">
+                                <pfx7:listaBG>
+                                    <xsl:if test="pfx6:descripcion">
+                                        <pfx7:descripcion>
+                                            <xsl:value-of select="pfx6:descripcion"/>
+                                        </pfx7:descripcion>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:contrato">
+                                        <pfx7:contrato>
+                                            <xsl:value-of select="pfx6:contrato"/>
+                                        </pfx7:contrato>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaTotal">
+                                        <pfx7:deudaTotal>
+                                            <xsl:value-of select="pfx6:deudaTotal"/>
+                                        </pfx7:deudaTotal>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaPrepago">
+                                        <pfx7:deudaPrepago>
+                                            <xsl:value-of select="pfx6:deudaPrepago"/>
+                                        </pfx7:deudaPrepago>
+                                    </xsl:if>
+                                </pfx7:listaBG>
+                            </xsl:for-each>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:listaMP">
+                                <pfx7:listaMP>
+                                    <xsl:if test="pfx6:numeroTarjeta">
+                                        <pfx7:numeroTarjeta>
+                                            <xsl:value-of select="pfx6:numeroTarjeta"/>
+                                        </pfx7:numeroTarjeta>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:descripcion">
+                                        <pfx7:descripcion>
+                                            <xsl:value-of select="pfx6:descripcion"/>
+                                        </pfx7:descripcion>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaTotalCLP">
+                                        <pfx7:deudaTotalCLP>
+                                            <xsl:value-of select="pfx6:deudaTotalCLP"/>
+                                        </pfx7:deudaTotalCLP>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaTotalUSD">
+                                        <pfx7:deudaTotalUSD>
+                                            <xsl:value-of select="pfx6:deudaTotalUSD"/>
+                                        </pfx7:deudaTotalUSD>
+                                    </xsl:if>
+                                    <xsl:if test="pfx6:deudaPrepago">
+                                        <pfx7:duedaPrepago>
+                                            <xsl:value-of select="pfx6:deudaPrepago"/>
+                                        </pfx7:duedaPrepago>
+                                    </xsl:if>
+                                </pfx7:listaMP>
+                            </xsl:for-each>
+                            <xsl:for-each select="$callCO-FO/pfx6:CallCoFo_Response/pfx6:Data/pfx6:deudasARefinanciar/pfx6:total">
+                                <pfx7:total>
+                                    <xsl:if test="pfx6:montoLiquido">
+                                        <pfx7:montoLiquido>
+                                            <xsl:value-of select="pfx6:montoLiquido"/>
+                                        </pfx7:montoLiquido>
+                                    </xsl:if>
+                                </pfx7:total>
+                            </xsl:for-each>
+                        </pfx7:deudasARefinanciar>
+                    </pfx7:OUTPUT>
+                </pfx7:ContrataCreditoConsumo_Response>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render-JSON-1">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>697</pd:x>
+        <pd:y>363</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityInputEditor ref="pfx7:ContrataCreditoConsumo_Response"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <xsl:copy-of select="$Map-Data/pfx7:ContrataCreditoConsumo_Response"/>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>LogEntrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogEntrada</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CL1CO-VALDesafio-CreaOTP</pd:from>
+        <pd:to>callCO-FO</pd:to>
+        <pd:xpathDescription>ValidaDesafioOK</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$CL1CO-VALDesafio-CreaOTP/ns10:Validar_Desafio_Response/pfx8:Informacion/pfx8:Codigo = '00'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>callCO-FO</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:xpathDescription>OK CO-FO</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$callCO-FO/pfx6:CallCoFo_Response/pfx8:Informacion/pfx8:Resultado = 'OK'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CL1CO-VALDesafio-CreaOTP</pd:from>
+        <pd:to>GenerateErrorValidaDesafio</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65485</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>callCO-FO</pd:from>
+        <pd:to>Generate-Error-CallCO-FO</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>CL1CO-VALDesafio-CreaOTP</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>LogSalida</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>Render-JSON-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render-JSON-1</pd:from>
+        <pd:to>LogError</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogError</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LogSalida</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

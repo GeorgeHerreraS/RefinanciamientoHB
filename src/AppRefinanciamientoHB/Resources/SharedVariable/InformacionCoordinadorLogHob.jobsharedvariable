@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:pfx="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:pfx2="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <name>InformacionCoordinadorLogHob</name>
+    <resourceType>ae.shared.jobSharedVariable</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <initialValue>byData</initialValue>
+        <initialValueData>&lt;?xml version="1.0" encoding="UTF-8"?&gt; &lt;root&gt;     &lt;Informacion xmlns="pfx2"&gt;         &lt;Codigo&gt;''&lt;/Codigo&gt;         &lt;Resultado&gt;''&lt;/Resultado&gt;         &lt;Mensaje&gt;''&lt;/Mensaje&gt;     &lt;/Informacion&gt;     &lt;GrabarInicioCoordinador&gt;false&lt;/GrabarInicioCoordinador&gt; &lt;/root&gt;</initialValueData>
+        <xsdString>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element ref="pfx2:Informacion"/>
+                        <xsd:element name="GrabarInicioCoordinador" type="xsd:boolean"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsdString>
+    </config>
+</BWSharedResource>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:ns2="http://www.tibco.com/pe/EngineTypes" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns3="http://isban.cl/Schema/loghob/register/v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns12="http://www.tibco.com/pe/WriteToLogActivitySchema">
+    <pd:name>Services/GrabaLogHob_Notification_V2.process</pd:name>
+    <pd:startName>Receive Notification</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="Receive Notification">
+        <pd:type>com.tibco.plugin.waitnotify.WaitEventSource</pd:type>
+        <pd:resourceType>ae.activities.waitStarter</pd:resourceType>
+        <pd:x>69</pd:x>
+        <pd:y>64</pd:y>
+        <config>
+            <sharedConfig>/Resources/SharedVariable/LogHob.sharednotify</sharedConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>432</pd:endX>
+    <pd:endY>56</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/Process/SubProcess/CL1SPSQL_GrabaLogHob_V2</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>317</pd:x>
+        <pd:y>177</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Log Error CL1SPSQL-GrabaLogHob_V2">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>431</pd:x>
+        <pd:y>185</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns12:ActivityInput>
+                <message>
+                    <xsl:value-of select="$_error/ns2:ErrorReport/StackTrace"/>
+                </message>
+                <xsl:if test="$_error/ns2:ErrorReport/MsgCode">
+                    <msgCode>
+                        <xsl:value-of select="$_error/ns2:ErrorReport/MsgCode"/>
+                    </msgCode>
+                </xsl:if>
+            </ns12:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log Fin CL1SPSQL-GrabaLogHob_V2">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>315</pd:x>
+        <pd:y>64</pd:y>
+        <config>
+            <role>User</role>
+        </config>
+        <pd:inputBindings>
+            <ns12:ActivityInput>
+                <message>
+                    <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/CodigoOk"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/MensajeOk"/>
+                </msgCode>
+            </ns12:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MQ-Put-LOGHOB-1">
+        <pd:type>com.tibco.plugin.bwmq.MqPutActivity</pd:type>
+        <pd:resourceType>plugin.bwmq.MqPutActivity</pd:resourceType>
+        <pd:x>184</pd:x>
+        <pd:y>71</pd:y>
+        <config>
+            <version>7.06.00</version>
+            <contentType>Text</contentType>
+            <desttype>QUEUE</desttype>
+            <dynamic>false</dynamic>
+            <lastSegment>false</lastSegment>
+            <persistence>Not Persistent</persistence>
+            <messagetype>MQMT_DATAGRAM</messagetype>
+            <expiration>%%LOGHOB/MqExpiration%%</expiration>
+            <priority>%%LOGHOB/MqPriority%%</priority>
+            <reportCoaOptions>None</reportCoaOptions>
+            <reportCodOptions>None</reportCodOptions>
+            <reportExceptionOptions>None</reportExceptionOptions>
+            <reportExpiryOptions>None</reportExpiryOptions>
+            <multiMessage>None</multiMessage>
+            <segmentedMaxSize>0</segmentedMaxSize>
+            <asyncPut>false</asyncPut>
+            <passContext>all</passContext>
+            <clusterloadbalance>false</clusterloadbalance>
+            <segmentation>None</segmentation>
+            <connectionresource>/Resources/Connections/MqConnectLogHob.mqcon</connectionresource>
+            <destination>%%LOGHOB/QueueRequest%%</destination>
+        </config>
+        <pd:inputBindings>
+            <InteractionInput>
+                <mqproperties>
+                    <characterSet>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/LOGHOB/MqCharSet"/>
+                    </characterSet>
+                    <expiry>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/LOGHOB/MqExpiration"/>
+                    </expiry>
+                </mqproperties>
+                <text>
+                    <xsl:value-of select="$Receive-Notification/root/text"/>
+                </text>
+            </InteractionInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Log Fin CL1SPSQL-GrabaLogHob_V2</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Log Error CL1SPSQL-GrabaLogHob_V2</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log Error CL1SPSQL-GrabaLogHob_V2</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Receive Notification</pd:from>
+        <pd:to>MQ-Put-LOGHOB-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MQ-Put-LOGHOB-1</pd:from>
+        <pd:to>Log Fin CL1SPSQL-GrabaLogHob_V2</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

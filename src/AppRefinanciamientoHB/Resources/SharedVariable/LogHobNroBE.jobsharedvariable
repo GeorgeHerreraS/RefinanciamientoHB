@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <name>LogHobNroBE</name>
+    <resourceType>ae.shared.jobSharedVariable</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <initialValue>byData</initialValue>
+        <initialValueData>&lt;?xml version="1.0" encoding="UTF-8"?&gt; &lt;Numero&gt;0&lt;/Numero&gt;</initialValueData>
+        <xsdString>
+            <xsd:element name="Numero" type="xsd:int"/>
+        </xsdString>
+    </config>
+</BWSharedResource>

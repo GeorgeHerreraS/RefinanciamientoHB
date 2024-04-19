@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/CO_ContrataCreditoConsumo.xsd"
+	 xmlns:ns1="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/INFO.xsd"
+	 xmlns:ns2="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd"
+	 targetNamespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/CO_ContrataCreditoConsumo.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/INFO.xsd" schemaLocation="INFO.xsd"/>
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd" schemaLocation="Datos-Arquitectura.xsd"/>
+	<xs:element name="CO_ContrataCreditoConsumo_Request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns2:Cabecera"/>
+				<xs:element name="INPUT">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="RutCliente" type="xs:string"/>
+							<xs:element name="MatrizDesafio" type="xs:string"/>
+							<xs:element name="entidad" type="xs:string"/>
+							<xs:element name="idOrigen" type="xs:string"/>
+							<xs:element name="idSolicitud" type="xs:string"/>
+							<xs:element name="fechaConsulta" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ContrataCreditoConsumo_Response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns1:INFO"/>
+				<xs:element name="OUTPUT" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Escalares" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="email" type="xs:string" minOccurs="0"/>
+										<xs:element name="valorCuota" type="xs:string" minOccurs="0"/>
+										<xs:element name="cantidadCuotas" type="xs:string" minOccurs="0"/>
+										<xs:element name="montoBruto" type="xs:string" minOccurs="0"/>
+										<xs:element name="montoLiquido" type="xs:string" minOccurs="0"/>
+										<xs:element name="montoAPagar" type="xs:string" minOccurs="0"/>
+										<xs:element name="fechaPrimerVencimiento" type="xs:string" minOccurs="0"/>
+										<xs:element name="CAE" type="xs:string" minOccurs="0"/>
+										<xs:element name="tasaMensual" type="xs:string" minOccurs="0"/>
+										<xs:element name="tasaAnual" type="xs:string" minOccurs="0"/>
+										<xs:element name="impuesto" type="xs:string" minOccurs="0"/>
+										<xs:element name="gastoNotarial" type="xs:string" minOccurs="0"/>
+										<xs:element name="gastosTotales" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroDesgravamenMensual" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroDesgravamenAnual" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroCesantiaMensual" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroCesantiaAnual" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroVidaMensual" type="xs:string" minOccurs="0"/>
+										<xs:element name="seguroVidaAnual" type="xs:string" minOccurs="0"/>
+										<xs:element name="totalSeguroMensual" type="xs:string" minOccurs="0"/>
+										<xs:element name="totalSeguroAnual" type="xs:string" minOccurs="0"/>
+										<xs:element name="GlosaRespuesta" type="xs:string" minOccurs="0"/>
+										<xs:element name="IntentosFallidosRestantes" type="xs:string" minOccurs="0"/>
+										<xs:element name="Resultado" type="xs:string" minOccurs="0"/>
+										<xs:element name="CodigoOTP" type="xs:string" minOccurs="0"/>
+										<xs:element name="IdTrxOTP" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="rebajaCuposYCierreProductos" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="productoMP" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="numeroTarjeta" type="xs:string" minOccurs="0"/>
+													<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoActualPesos" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoNuevoPesos" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoActualDolar" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoNuevoDolar" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="productoBG" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+													<xs:element name="contrato" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoActualPesos" type="xs:string" minOccurs="0"/>
+													<xs:element name="cupoNuevoPesos" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="deudasARefinanciar" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="valorDolar" type="xs:string" minOccurs="0"/>
+										<xs:element name="listaUG" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+													<xs:element name="contrato" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaTotal" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaPrepago" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="listaBG" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+													<xs:element name="contrato" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaTotal" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaPrepago" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="listaMP" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="numeroTarjeta" type="xs:string" minOccurs="0"/>
+													<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaTotalCLP" type="xs:string" minOccurs="0"/>
+													<xs:element name="deudaTotalUSD" type="xs:string" minOccurs="0"/>
+													<xs:element name="duedaPrepago" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="total" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="montoLiquido" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

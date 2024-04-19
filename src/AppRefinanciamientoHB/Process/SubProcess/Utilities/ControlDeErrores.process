@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/pe/EngineTypes" xmlns:ns2="http://schemas.tibco.com/bw/plugins/http/5.0/httpExceptions" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns3="http://schemas.tibco.com/bw/pe/plugin/5.0/exceptions">
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Utilities/ControlDeErrores.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:any processContents="lax"/>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <pfx2:Informacion>
+            <pfx2:Codigo>
+                <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/CodigoError"/>
+            </pfx2:Codigo>
+            <xsl:choose>
+                <!--CONTROL DE ERRORES SOAP-->
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'defaultFaultElement'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/defaultFaultElement/faultcode),' ',normalize-space($Start/ns0:ErrorReport/Data/defaultFaultElement/faultstring))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'Error al Consultar, favor intentar nuevamente.'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'HttpClientException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpClientException/msgCode),' ',normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpClientException/msg))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'No se pudo conectar con cliente, Intente mas tarde.'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'HttpServerException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpServerException/msgCode),' ',normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpServerException/msg))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'No se recibió respuesta del servidor, Intente mas tarde.'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'HttpCommunicationException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpCommunicationException/msgCode),' ',normalize-space($Start/ns0:ErrorReport/Data/ns2:HttpCommunicationException/msg))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'Problemas al ejecutar el servicio. Intente nuevamente'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'ActivityTimedOutException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/ns3:ActivityTimedOutException/msgCode),' ',normalize-space($Start/ns0:ErrorReport/Data/ns3:ActivityTimedOutException/msg))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'Tiempo de espera agotado, favor intente nuevamente.'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'ActivityException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/defaultFaultElement/faultcode),' ',normalize-space($Start/ns0:ErrorReport/Data/defaultFaultElement/faultstring))"/>
+                    </pfx2:Resultado>
+                    <xsl:choose>
+                        <xsl:when test="normalize-space($Start/ns0:ErrorReport/Data/defaultFaultElement/faultstring)='No hits found'">
+                            <pfx2:Mensaje>
+                                <xsl:value-of select="'No se han encontrado resultados'"/>
+                            </pfx2:Mensaje>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <pfx2:Mensaje>
+                                <xsl:value-of select="'La operación no pudo ser realizada. Intente más tarde.'"/>
+                            </pfx2:Mensaje>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:when test="$Start/ns0:ErrorReport/Class = 'JSONRestException'">
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/Data/ns3:JSONRestException/msgCode),' ',normalize-space($Start/ns0:ErrorReport/Data/ns3:JSONRestException/msg))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'Se produce una excepción al invocar API REST durante el tiempo de ejecución. Intente mas tarde.'"/>
+                    </pfx2:Mensaje>
+                </xsl:when>
+                <!--GENERAL-->
+                <xsl:otherwise>
+                    <pfx2:Resultado>
+                        <xsl:value-of select="concat(normalize-space($Start/ns0:ErrorReport/MsgCode),' ',normalize-space($Start/ns0:ErrorReport/StackTrace))"/>
+                    </pfx2:Resultado>
+                    <pfx2:Mensaje>
+                        <xsl:value-of select="'La operación no pudo ser realizada. Intente más tarde.'"/>
+                    </pfx2:Mensaje>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pfx2:Informacion>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx2:Informacion"/>
+    <pd:endX>302</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/ControlDeErrores</pd:targetNamespace>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>160</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns0:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="$Start/ns0:ErrorReport/Class"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="$Start/*"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

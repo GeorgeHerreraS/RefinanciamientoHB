@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 targetNamespace="http://itg.isban.cl/BackEndProcess/Resources/Schemas/authenticateChallenge.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="authenticateChallengeRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Cabecera" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="HOST" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="USUARIO-ALT" type="xs:string" minOccurs="0"/>
+										<xs:element name="TERMINAL-ALT" type="xs:string" minOccurs="0"/>
+										<xs:element name="CANAL-ID" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CanalFisico" type="xs:string" minOccurs="0"/>
+							<xs:element name="CanalLogico" type="xs:string" minOccurs="0"/>
+							<xs:element name="RutCliente" type="xs:string" minOccurs="0"/>
+							<xs:element name="RutUsuario" type="xs:string" minOccurs="0"/>
+							<xs:element name="IpCliente" type="xs:string" minOccurs="0"/>
+							<xs:element name="InfoDispositivo" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Entrada" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="userId" type="xs:string"/>
+							<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+							<xs:element name="listResponses" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="transactionId" type="xs:string" minOccurs="0"/>
+							<xs:element name="challengeType" type="xs:string"/>
+							<xs:element name="transactionData" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string" minOccurs="0"/>
+													<xs:element name="value" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="authenticateChallengeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="INFO">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="CODERR" type="xs:string"/>
+							<xs:element name="DESERR" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OUTPUT" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="userId" type="xs:string" minOccurs="0"/>
+							<xs:element name="group" type="xs:string" minOccurs="0"/>
+							<xs:element name="userName" type="xs:string" minOccurs="0"/>
+							<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+							<xs:element name="challengeType" type="xs:string" minOccurs="0"/>
+							<xs:element name="responseStatus" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="code" type="xs:int" minOccurs="0"/>
+										<xs:element name="description" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

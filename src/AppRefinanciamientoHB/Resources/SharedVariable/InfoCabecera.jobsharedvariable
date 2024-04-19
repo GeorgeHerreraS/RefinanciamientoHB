@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:pfx="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/Cabecera.xsd" xmlns:pfx2="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/cabecera.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/Cabecera.xsd" schemaLocation="/Resources/Schemas/Cabecera.xsd"/>
+    <import namespace="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/cabecera.xsd" schemaLocation="/Resources/Schemas/cabecera.xsd"/>
+    <name>InfoCabecera</name>
+    <resourceType>ae.shared.jobSharedVariable</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <initialValue>none</initialValue>
+        <initialValueData>&lt;?xml version="1.0" encoding="UTF-8"?&gt; &lt;Cabecera&gt;     &lt;HOST&gt;         &lt;USUARIO-ALT/&gt;         &lt;TERMINAL-ALT/&gt;         &lt;CANAL-ID/&gt;     &lt;/HOST&gt;     &lt;CanalFisico/&gt;     &lt;CanalLogico/&gt;     &lt;RutCliente/&gt;     &lt;RutUsuario/&gt;     &lt;IpCliente/&gt;     &lt;InfoDispositivo/&gt;     &lt;InfoDataPower/&gt;     &lt;InfoArquitectura/&gt;     &lt;InfoGeneral&gt;         &lt;NumeroServidor/&gt;     &lt;/InfoGeneral&gt;     &lt;ProcessStarter&gt;         &lt;RequestURI/&gt;     &lt;/ProcessStarter&gt; &lt;/Cabecera&gt;</initialValueData>
+        <xsdString ref="pfx2:cabecera"/>
+    </config>
+</BWSharedResource>

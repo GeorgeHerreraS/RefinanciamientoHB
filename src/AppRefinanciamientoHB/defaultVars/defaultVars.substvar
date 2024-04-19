@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>BW_GLOBAL_TRUSTED_CA_STORE</name>
+			<value>file:///c:/software/tibco_bw/utilities/cer</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1556131886264</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Deployment</name>
+			<value>AppRefinanciamientoHB</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1533567827069</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>MessageEncoding</name>
+			<value>ISO8859-1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1533567827069</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

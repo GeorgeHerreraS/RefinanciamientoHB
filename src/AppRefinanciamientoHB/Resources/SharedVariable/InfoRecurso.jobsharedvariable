@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pfx="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd">
+    <import namespace="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <name>InfoRecurso</name>
+    <resourceType>ae.shared.jobSharedVariable</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <initialValue>byData</initialValue>
+        <initialValueData>&lt;?xml version="1.0" encoding="UTF-8"?&gt; &lt;logHob&gt;     &lt;Funcionalidad/&gt;     &lt;RutCliente/&gt;     &lt;CtaOrig/&gt;     &lt;CtaDtn/&gt;     &lt;TrnMonto/&gt; &lt;/logHob&gt;</initialValueData>
+        <xsdString>
+            <xsd:element name="logHob">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Funcionalidad" type="xsd:string"/>
+                        <xsd:element name="RutCliente" type="xsd:string"/>
+                        <xsd:element name="CtaOrig" type="xsd:string"/>
+                        <xsd:element name="CtaDtn" type="xsd:string"/>
+                        <xsd:element name="TrnMonto" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsdString>
+    </config>
+</BWSharedResource>

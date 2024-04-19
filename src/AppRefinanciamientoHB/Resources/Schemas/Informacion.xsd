@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd"
+	 targetNamespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="Informacion">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Codigo" type="xs:string"/>
+				<xs:element name="Resultado" type="xs:string"/>
+				<xs:element name="Mensaje" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

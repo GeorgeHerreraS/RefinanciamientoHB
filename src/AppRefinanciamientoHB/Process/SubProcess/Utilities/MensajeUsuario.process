@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns11="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns3="http://www.tibco.com/pe/EngineTypes">
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Utilities/MensajeUsuario.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="Entrada">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="CodTrx" type="xsd:string"/>
+                    <xsd:element name="CodSalida" type="xsd:string"/>
+                    <xsd:element name="BackEnd" type="xsd:string"/>
+                    <xsd:element ref="pfx:Informacion"/>
+                    <xsd:element name="IntentosFallidosRestantes" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <!--PARAMETROS-->
+        <xsl:variable name="BackEnd" select="$Start/Entrada/BackEnd"/>
+        <xsl:variable name="Descripcion" select="normalize-space($Start/Entrada/pfx2:Informacion/pfx2:Resultado)"/>
+        <xsl:variable name="Codigo" select="$Start/Entrada/pfx2:Informacion/pfx2:Codigo"/>
+        <xsl:variable name="IntentosFallidosRestantes" select="$Start/Entrada/IntentosFallidosRestantes"/>
+        <!--VARIABLES-->
+        <xsl:variable name="CodTrx" select="$Start/Entrada/CodTrx"/>
+        <xsl:variable name="DescripcionSalida" select="if ($Start/Entrada/pfx2:Informacion/pfx2:Mensaje!='') then $Start/Entrada/pfx2:Informacion/pfx2:Mensaje else &#xA;if (substring($Descripcion,1,1)='@') then substring($Descripcion,11) else &#xA;if (tib:index-of($Descripcion, 'ORA-20005')>0) then substring-before(substring-after($Descripcion, 'ORA-20005: '), 'Codigo: ') else &#xA;if (tib:index-of($Descripcion, 'SQLServerException: ') > 0 ) then substring-before(substring-after($Descripcion, 'SQLServerException: '), '&quot;') else&#xA;if ($CodTrx = $_globalVariables/ns11:GlobalVariables/INFO/CodigoError) then $_globalVariables/ns11:GlobalVariables/INFO/MensajeError else &#xA;if ($CodTrx = $_globalVariables/ns11:GlobalVariables/INFO/CodigoOk) then $_globalVariables/ns11:GlobalVariables/INFO/MensajeOk else &#xA;if ($Descripcion='') then $_globalVariables/ns11:GlobalVariables/INFO/MensajeError else $Descripcion"/>
+        <xsl:variable name="Valida" select="substring($CodTrx,1,3)"/>
+        <xsl:variable name="CodSalida" select="{-- CCCKC186 --} if ($BackEnd = 'K520' and $CodTrx = '@AVBGA0025') then '00' else &#xA;{-- RECBU001 --} if ($BackEnd = 'BUM5' and $CodTrx = '@AVBUA0002') then '00' else {-- OK. MODIFICACION EFECTUADA --}&#xA;{-- RECBU005 --} if ($BackEnd = 'BUM6' and $CodTrx = '@AVBUA0008') then '00' else&#xA;{-- RECBU005 --} if ($BackEnd = 'BUM6' and ($CodTrx = '@ERBUE0050' or $CodTrx = '@ERBGE0515' or $CodTrx = '@ERBGE2122')) then '16' else &#xA;{-- STFBG443 --} if ($BackEnd = 'K443' and $CodTrx = '@ERBGE0071') then '00' else &#xA;{-- CCCKC209 --} if ($BackEnd = 'BGM1' and $CodTrx = '@AVBGA0025') then '00' else&#xA;{-- CCCKC210 --} if ($BackEnd = 'BGM2' and ($CodTrx = '@AVBGA0143' or $CodTrx = '@AVBGA8001')) then '00' else {--@AVBGA8001: EXISTEN MAS REGISTROS A CONSULTAR--}&#xA;{-- CCCKC210 --} if ($BackEnd = 'BGM2' and $CodTrx = '@ERBGE0071') then '00' else {-- @ERBGE0071 NO EXISTEN DATOS --}&#xA;{-- CCCKC211 --} if ($BackEnd = 'BGM4' and $CodTrx = '@AVBGA0025') then '00' else {--@AVBGA0025: OK. OPERACION EFECTUADA.--}&#xA;{-- SACKX007 --} if ($BackEnd = 'SP_SAC_LST_RCM_CLI' and tib:index-of($Descripcion, 'ORA-20001: Busqueda cliente: cliente no existe') > 0) then '00' &#xA;else $Start/Entrada/CodSalida"/>
+        <xsl:variable name="Resultado" select="concat('Job-',$_processContext/ns3:ProcessContext/ProcessId,';',$BackEnd,' ',$CodTrx, ' ',$Descripcion)"/>
+        <pfx:Informacion>
+            <pfx:Codigo>
+                <xsl:value-of select="$CodSalida"/>
+            </pfx:Codigo>
+            <pfx:Resultado>
+                <xsl:value-of select="$Resultado"/>
+            </pfx:Resultado>
+            <xsl:choose>
+                <xsl:when test="$BackEnd = 'SuperClave.urn:SolicitarDesafio'">
+                    <xsl:choose>
+                        <!--5203002: El usuario no posee tarjeta de coordenadas / 5203004: Usuario no existe para solicitar desafío-->
+                        <!--@ERM000001 / @ERM010001 - Cliente no tiene Tarjeta de Coordenadas.-->
+                        <xsl:when test="$CodTrx = '@ER5203002' or $CodTrx = '@ER5203004'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Ud. no posee una súper clave asignada. Por favor acérquese a la sucursal más cercana.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203016: Usuario Bloqueado por intentos fallidos-->
+                        <!--@ERM000002 - Tarjeta de Cliente se encuentra bloqueada.-->
+                        <xsl:when test="$CodTrx = '@ER5203016'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Su súper clave se encuentra bloqueada. Por favor acérquese a la sucursal más cercana o llame a VOX Banco al (600) 320 3000 o VOX Banefe (600) 600 1000.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203038: Usuario suspendido por Administrador-->
+                        <xsl:when test="$CodTrx = '@ER5203038'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Usuario suspendido por Administrador'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203040: Tarjeta Inactiva o cancelada-->
+                        <xsl:when test="$CodTrx = '@ER5203040'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Ud. su Tarjeta de Coordenadas se encuentra inactiva. Por favor acérquese a la sucursal más cercana.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <pfx:Mensaje>
+                                <xsl:value-of select="$DescripcionSalida"/>
+                            </pfx:Mensaje>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'SuperClave.urn:ValidarDesafio'">
+                    <xsl:choose>
+                        <!--5203004: Usuario no existe para autenticar - User 00XXXXXXXXX was not found and cannot be used for authentication.-->
+                        <!--5203002: El usuario no posee tarjeta de coordenadas-->
+                        <!--@ERM000001: Cliente no Tiene Tarjeta Asignada / @ERM010001: Cliente no tiene Tarjeta de Coordenadas-->
+                        <xsl:when test="$CodTrx = '@ER5203004' or $CodTrx = '@ER5203002'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Ud. no posee una súper clave asignada. Por favor acérquese a la sucursal más cercana.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203000: Autenticación fallida, retornar intentos fallidos - Failed authentication for user clientes/00XXXXXXXXX. Invalid response to a challenge. 5 GRID authentication attempts remaining.-->
+                        <!--@ERM203000: Clave errronea - cuantos intentos fallidos quedan-->
+                        <xsl:when test="$CodTrx = '@ER5203000'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="concat('Los valores de coordenadas ingresados no son válidos. Aún le restan ' , $IntentosFallidosRestantes,  ' intentos antes de que, por su seguridad, se bloquee el servicio de transferencias.')"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203007: No hay desafío a validar - Failure to authenticate user clientes/00070558718. Challenge not found.-->
+                        <!--@ERM203007: Failure to authenticate user clientes/00XXXXXXXXX, challenge not found-->
+                        <xsl:when test="$CodTrx = '@ER5203007'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Problemas al validar la informacion solicitada'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--@ERM203017: Se acaba de bloquear la tarjeta-->
+                        <xsl:when test="$CodTrx = '@ER5203017'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Su tarjeta Super Clave se encuentra bloqueada.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203016: Usuario Bloqueado por intentos fallidos - Maximum authentication attempts exceeded. User clientes/00XXXXXXXXX is locked. -->
+                        <!--@ERM000002: Tarjeta de Cliente se encuentra bloqueada-->
+                        <xsl:when test="$CodTrx = '@ER5203016'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Su súper clave se encuentra bloqueada. Por favor acérquese a la sucursal más cercana o llame a VOX Banco al (600) 320 3000 o VOX Banefe (600) 600 1000.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203038: Usuario suspendido por Administrador-->
+                        <xsl:when test="$CodTrx = '@ER5203038'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Usuario suspendido por Administrador'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203040: Tarjeta inactiva o cancelada-->
+                        <xsl:when test="$CodTrx = '@ER5203040'">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Estimado cliente: Ud. su Tarjeta de Coordenadas se encuentra inactiva. Por favor acérquese a la sucursal más cercana.'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <!--5203011: Failed authentication. User ID cannot be empty, null or longer than 255 characters.-->
+                        <!--5202096: Search found multiple users with user name 00XXXXXXXXX.-->
+                        <xsl:otherwise>
+                            <pfx:Mensaje>
+                                <xsl:value-of select="$DescripcionSalida"/>
+                            </pfx:Mensaje>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'SP_SAC_LST_RCM_CLI' {-- SACKX007 --}">
+                    <xsl:choose>
+                        <xsl:when test="tib:index-of($Descripcion, 'ORA-20001: Busqueda cliente: cliente no existe') > 0">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Operación Exitosa. Cliente no registra reclamos'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <xsl:when test="tib:index-of($Descripcion, 'ORA-20030: Error en la correccion del rut') > 0">
+                            <pfx:Mensaje>
+                                <xsl:value-of select="'Error en la correccion del rut'"/>
+                            </pfx:Mensaje>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <pfx:Mensaje>
+                                <xsl:value-of select="$DescripcionSalida"/>
+                            </pfx:Mensaje>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'WM01' and $CodTrx='@ERWME0002' {-- SMAMP014 --}">
+                    <pfx:Mensaje>
+                        <xsl:value-of select="'No se encuentran estados de cuenta disponibles'"/>
+                    </pfx:Mensaje>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'BUM6' and $CodTrx = '@ERBUE0050' {-- RECBU005 --}">
+                    <pfx:Mensaje>
+                        <xsl:value-of select="'La operación no pudo ser realizada. Intente más tarde.'"/>
+                    </pfx:Mensaje>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'BUM6' and ($CodTrx = '@ERBGE0515' or $CodTrx = '@ERBGE2122') {-- RECBU005 --}">
+                    <pfx:Mensaje>
+                        <xsl:value-of select="'La cuenta elegida no posee saldo disponible para realizar el pago.'"/>
+                    </pfx:Mensaje>
+                </xsl:when>
+                <xsl:when test="($BackEnd = 'BGM1'  or $BackEnd = 'BGM2'  or $BackEnd = 'BGM4') and $CodTrx = '@ERBUE0050' {-- CCCKC209, CCCKC210, CCCKC211--}">
+                    <pfx:Mensaje>
+                        <xsl:value-of select="'La Cuenta de Cargo ingresada es incorrecta.'"/>
+                    </pfx:Mensaje>
+                </xsl:when>
+                <xsl:when test="$BackEnd = 'BGM1'  and $CodTrx = '@ERBGE2001' {-- CCCKC209 --}">
+                    <pfx:Mensaje>
+                        <xsl:value-of select="'Ha Superado el máximo disponible por día.'"/>
+                    </pfx:Mensaje>
+                </xsl:when>
+                <xsl:otherwise>
+                    <pfx:Mensaje>
+                        <xsl:value-of select="$DescripcionSalida"/>
+                    </pfx:Mensaje>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pfx:Informacion>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx:Informacion"/>
+    <pd:endX>299</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/MensajeUsuario</pd:targetNamespace>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>155</pd:x>
+        <pd:y>36</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns3:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="concat('Resultado BE (',$Start/Entrada/BackEnd,')')"/>
+                    </titulo>
+                    <xml>
+                        <xsl:copy-of select="$Start/Entrada/pfx:Informacion"/>
+                    </xml>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

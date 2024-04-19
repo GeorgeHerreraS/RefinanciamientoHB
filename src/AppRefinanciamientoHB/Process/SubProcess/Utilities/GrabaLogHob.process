@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:pfx3="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns3="http://www.tibco.com/pe/EngineTypes">
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Utilities/GrabaLogHob.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:choice>
+                        <xsd:element name="InicioCoordinador" type="xsd:boolean"/>
+                        <xsd:element name="FinCoordinador" type="xsd:boolean"/>
+                        <xsd:element name="Atomico" type="xsd:string"/>
+                    </xsd:choice>
+                    <xsd:choice>
+                        <xsd:element name="TramaEntrada">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:any minOccurs="0" processContents="lax"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="request_json" type="xsd:string"/>
+                    </xsd:choice>
+                    <xsd:choice>
+                        <xsd:element name="TramaSalida">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:any minOccurs="0" processContents="lax"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="response_json" type="xsd:string"/>
+                    </xsd:choice>
+                    <xsd:element name="ResultadoAtomico" type="xsd:boolean"/>
+                    <xsd:element ref="pfx:Informacion"/>
+                    <xsd:element name="UsaMsjUsr" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="IntentosFallidosRestantes" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>257</pd:startY>
+    <pd:returnBindings>
+        <xsl:choose>
+            <xsl:when test="exists($Start/root/InicioCoordinador) or exists($Start/root/FinCoordinador)">
+                <xsl:copy-of select="$Start/root/pfx:Informacion"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="$Start/root/ResultadoAtomico='false' {-- ERROR --}">
+                        <pfx:Informacion>
+                            <pfx:Codigo>
+                                <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                            </pfx:Codigo>
+                            <pfx:Resultado>
+                                <xsl:value-of select="concat('Job-',$_processContext/ns3:ProcessContext/ProcessId,';',$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd,' ', $Start/root/pfx:Informacion/pfx:Codigo,' ',$Start/root/pfx:Informacion/pfx:Resultado)"/>
+                            </pfx:Resultado>
+                            <pfx:Mensaje>
+                                <xsl:value-of select="$Start/root/pfx:Informacion/pfx:Mensaje"/>
+                            </pfx:Mensaje>
+                        </pfx:Informacion>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:choose>
+                            <xsl:when test="string($MensajeUsuario/pfx:Informacion)!=''">
+                                <pfx:Informacion>
+                                    <pfx:Codigo>
+                                        <xsl:value-of select="$MensajeUsuario/pfx:Informacion/pfx:Codigo"/>
+                                    </pfx:Codigo>
+                                    <pfx:Resultado>
+                                        <xsl:value-of select="$MensajeUsuario/pfx:Informacion/pfx:Resultado"/>
+                                    </pfx:Resultado>
+                                    <pfx:Mensaje>
+                                        <xsl:value-of select="if ($Start/root/UsaMsjUsr='true') then $Start/root/pfx:Informacion/pfx:Mensaje else $MensajeUsuario/pfx:Informacion/pfx:Mensaje"/>
+                                    </pfx:Mensaje>
+                                </pfx:Informacion>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="$Start/root/pfx:Informacion"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType ref="pfx:Informacion"/>
+    <pd:endX>741</pd:endX>
+    <pd:endY>255</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/GrabaLogHob</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>978</pd:x>
+        <pd:y>253</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=BwmqException namespace=http://schemas.tibco.com/bw/plugins/bwmq/5.0/bwmqExceptions</fault>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Get Componentes y Codigos DWH">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>61</pd:x>
+        <pd:y>102</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/CodigosDWH.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Get Datos Cabecera">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>213</pd:x>
+        <pd:y>349</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoCabecera.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Get Informacion Coordinador">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>220</pd:x>
+        <pd:y>263</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoRecurso.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Get Numero Secuencia">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>209</pd:x>
+        <pd:y>465</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/LogHobNroBE.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>400</pd:x>
+        <pd:y>257</pd:y>
+        <config>
+            <element>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="TXNAME" type="xsd:string"/>
+                            <xsd:element name="MSGIN" type="xsd:string"/>
+                            <xsd:element name="MSGIN2" type="xsd:string"/>
+                            <xsd:element name="MSGIN3" type="xsd:string"/>
+                            <xsd:element name="RUT" type="xsd:string"/>
+                            <xsd:element name="CLASS" type="xsd:string"/>
+                            <xsd:element name="STATUS" type="xsd:string"/>
+                            <xsd:element name="MSGERR" type="xsd:string"/>
+                            <xsd:element name="URL" type="xsd:string"/>
+                            <xsd:element name="IP" type="xsd:string"/>
+                            <xsd:element name="TPO" type="xsd:string"/>
+                            <xsd:element name="TMP_MDW" type="xsd:string"/>
+                            <xsd:element name="CTA_ORG" type="xsd:string"/>
+                            <xsd:element name="CTA_DTN" type="xsd:string"/>
+                            <xsd:element name="MNT_TRN" type="xsd:string"/>
+                            <xsd:element name="COD_DWH" type="xsd:string"/>
+                            <xsd:element name="TRANSA" type="xsd:string"/>
+                            <xsd:element name="DATELOG" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="varEntradaBE" select="if (exists($Start/root/FinCoordinador)) then $Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/TramaSalida else $Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/TramaEntrada"/>
+            <xsl:variable name="entradaBE" select="if (exists($Start/root/FinCoordinador) or tib:index-of($varEntradaBE, ' xmlns')=-1) then $varEntradaBE &#xA;else concat(substring-before($varEntradaBE, ' xmlns'),'>', substring-after(substring-after($varEntradaBE, ' xmlns'), '>'))"/>
+            <xsl:variable name="largoEntrada" select="string-length($entradaBE)"/>
+            <root>
+                <TXNAME>
+                    <xsl:value-of select="'LOGHOB01'"/>
+                </TXNAME>
+                <MSGIN>
+                    <xsl:value-of select="tib:pad(tib:left($entradaBE, 255), '255',' ')"/>
+                </MSGIN>
+                <MSGIN2>
+                    <xsl:value-of select="tib:pad((if ($largoEntrada>255) then tib:left($entradaBE, 2048) else ''), '2048',' ')"/>
+                </MSGIN2>
+                <MSGIN3>
+                    <xsl:value-of select="tib:pad((if ($largoEntrada>2048) then substring($entradaBE, 2049, 2048) else ''),'2048',' ')"/>
+                </MSGIN3>
+                <RUT>
+                    <xsl:value-of select="tib:right(tib:pad-front(normalize-space($Get-Informacion-Coordinador/logHob/RutCliente), '10', '0'), 10)"/>
+                </RUT>
+                <CLASS>
+                    <xsl:value-of select="tib:left(tib:pad($Get-Datos-Cabecera/cabecera/InfoGeneral/NumeroServidor, '2', ' '),2)"/>
+                </CLASS>
+                <STATUS>
+                    <xsl:value-of select="tib:left(tib:pad($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/CodSalida, '2', ' '),2)"/>
+                </STATUS>
+                <MSGERR>
+                    <xsl:value-of select="{-- Si se trata del inicio de un coordinador, no se informa resultado --}&#xA;tib:left(tib:pad(if (exists($Start/root/InicioCoordinador)) then ''&#xA;else concat('Codigo: ',normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/CodTrx),' | Resultado: ', &#xA;if (not(exists($Start/root/Atomico)) and tib:index-of($Start/root/pfx:Informacion/pfx:Resultado, 'Job-')=-1) then concat('Job-',$_processContext/ns3:ProcessContext/ProcessId,';') else '',&#xA;normalize-space($Start/root/pfx:Informacion/pfx:Resultado))&#xA;, '255', ' '),255)"/>
+                </MSGERR>
+                <URL>
+                    <xsl:value-of select="tib:left(tib:pad(concat(&#xA;'Job-',$_processContext/ns3:ProcessContext/ProcessId,' | ',&#xA;normalize-space($Get-Informacion-Coordinador/logHob/Funcionalidad),' | ',&#xA;normalize-space($Get-Datos-Cabecera/cabecera/ProcessStarter/RequestURI),' | ',&#xA;tib:pad-front($Set-Numero-Secuencia--1/Numero, '2', '0'),'.-',&#xA;normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/Atomico), (if (normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/Atomico)!='') then ' | ' else ''),&#xA;if (normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd)!='') then $Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd &#xA;else if (normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd)='INCIO') then 'INICIO PROCESO'&#xA;else if (normalize-space($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd)='FIN') then 'TERMINO PROCESO' &#xA;else if (exists($Start/root/Atomico) and $Start/root/Atomico!='' ) then $Start/root/Atomico&#xA;else 'BE NO DEFINIDO')&#xA;, '255', ' '),255)"/>
+                </URL>
+                <IP>
+                    <xsl:value-of select="tib:left(tib:pad(normalize-space($Get-Datos-Cabecera/cabecera/IpCliente), '15', ' '),15)"/>
+                </IP>
+                <TPO>
+                    <xsl:value-of select="tib:pad(0, '5', ' ')"/>
+                </TPO>
+                <TMP_MDW>
+                    <xsl:value-of select="tib:pad(0, '5', ' ')"/>
+                </TMP_MDW>
+                <CTA_ORG>
+                    <xsl:value-of select="tib:right(tib:pad-front(normalize-space($Get-Informacion-Coordinador/logHob/CtaOrig), '12', '0'), 12)"/>
+                </CTA_ORG>
+                <CTA_DTN>
+                    <xsl:value-of select="tib:right(tib:pad-front(normalize-space($Get-Informacion-Coordinador/logHob/CtaDtn), '12', '0'), 12)"/>
+                </CTA_DTN>
+                <MNT_TRN>
+                    <xsl:value-of select="tib:right(tib:pad-front(normalize-space($Get-Informacion-Coordinador/logHob/TrnMonto), '15', '0'), 15)"/>
+                </MNT_TRN>
+                <COD_DWH>
+                    <xsl:value-of select="tib:left(tib:pad($Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/CodDWH, '10', ' '),10)"/>
+                </COD_DWH>
+                <TRANSA>
+                    <xsl:value-of select="tib:pad('', '40', ' ') {-- No se infroma, ya que no se trabaja con los nombres de las componentes MW, y se desconoce la equivalencia con el campo cod_org_trn para la busqueda en el SP --}"/>
+                </TRANSA>
+                <DATELOG>
+                    <xsl:value-of select="tib:pad('none', '25', ' ')"/>
+                </DATELOG>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Tramas, Info, Cods y Rsp BE">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>398</pd:x>
+        <pd:y>107</pd:y>
+        <config>
+            <element>
+                <xsd:element name="Codigos">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="CodTrx" type="xsd:string"/>
+                            <xsd:element name="CodSalida" type="xsd:string"/>
+                            <xsd:element name="InfoBE">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="Atomico" type="xsd:string"/>
+                                        <xsd:element name="BackEnd" type="xsd:string"/>
+                                        <xsd:element name="CodDWH" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="TramaEntrada" type="xsd:string"/>
+                            <xsd:element name="TramaSalida" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="dataEntrada" select="if (exists($Start/root/TramaEntrada)) then tib:render-xml($Start/root/TramaEntrada/*, true(), false()) else string($Start/root/request_json)"/>
+            <xsl:variable name="dataSalida" select="if (exists($Start/root/TramaSalida)) then tib:render-xml($Start/root/TramaSalida/*, true(), false()) else string($Start/root/response_json)"/>
+            <xsl:choose>
+                <xsl:when test="exists($Start/root/InicioCoordinador) or exists($Start/root/FinCoordinador)">
+                    <Codigos>
+                        <CodTrx>
+                            <xsl:value-of select="if (exists($Start/root/FinCoordinador)) then $Start/root/pfx:Informacion/pfx:Codigo else ''"/>
+                        </CodTrx>
+                        <CodSalida>
+                            <xsl:value-of select="if (exists($Start/root/FinCoordinador)) then $Start/root/pfx:Informacion/pfx:Codigo else '00'"/>
+                        </CodSalida>
+                        <InfoBE>
+                            <Atomico>
+                                <xsl:value-of select="''"/>
+                            </Atomico>
+                            <BackEnd>
+                                <xsl:value-of select="if (exists($Start/root/InicioCoordinador)) then 'INICIO' else 'FIN'"/>
+                            </BackEnd>
+                            <CodDWH>
+                                <xsl:value-of select="0"/>
+                            </CodDWH>
+                        </InfoBE>
+                        <TramaEntrada>
+                            <xsl:value-of select="$dataEntrada"/>
+                        </TramaEntrada>
+                        <TramaSalida>
+                            <xsl:value-of select="$dataSalida"/>
+                        </TramaSalida>
+                    </Codigos>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:variable name="Codigo" select="normalize-space($Start/root/pfx:Informacion/pfx:Codigo)"/>
+                    <xsl:variable name="Descripcion" select="normalize-space($Start/root/pfx:Informacion/pfx:Resultado)"/>
+                    <xsl:variable name="CodTrx" select="if (string-length($Codigo) = 7) &#xA;then concat('@',if (substring($Codigo,4,4)='8001') then 'AV' else 'ER',$Codigo)&#xA;else (&#xA;&#x9;if (substring($Codigo,1,1)='@') &#xA;&#x9;then substring($Codigo,1,10) &#xA;&#x9;else (&#xA;&#x9;&#x9;if (substring($Descripcion,1,1)='@') then &#xA;&#x9;&#x9;&#x9;substring($Descripcion,1,10) &#xA;&#x9;&#x9;else (&#xA;&#x9;&#x9;&#x9;if (string-length($Codigo) = 2) &#xA;&#x9;&#x9;&#x9;then (&#xA;&#x9;&#x9;&#x9;&#x9;if ($Codigo = '00') then $_globalVariables/ns1:GlobalVariables/INFO/CodigoOk&#xA;&#x9;&#x9;&#x9;&#x9;else if ($Codigo = '04') then $_globalVariables/ns1:GlobalVariables/INFO/CodigoAviso&#xA;&#x9;&#x9;&#x9;&#x9;else $_globalVariables/ns1:GlobalVariables/INFO/CodigoError&#xA;&#x9;&#x9;&#x9;) else (&#xA;&#x9;&#x9;&#x9;&#x9;if (tib:index-of($Descripcion, 'ORA-20005')>0) &#xA;&#x9;&#x9;&#x9;&#x9;then (concat('@ERSP',substring(substring-after(substring-after($Descripcion, 'ORA-20005: '), 'ORA-'),1,5))) &#xA;&#x9;&#x9;&#x9;&#x9;else (concat('@',substring($Codigo,1,9)))&#xA;&#x9;&#x9;&#x9;)&#xA;&#x9;&#x9;)&#xA;&#x9;)&#xA;)"/>
+                    <xsl:variable name="Valida" select="substring($CodTrx,1,3)"/>
+                    <xsl:variable name="var" select="$Start/root/Atomico"/>
+                    <xsl:variable name="InfoBE" select="$Get-Componentes-y-Codigos-DWH/codigosDWH/Definicion[Atomico=$var]"/>
+                    <Codigos>
+                        <CodTrx>
+                            <xsl:value-of select="$CodTrx"/>
+                        </CodTrx>
+                        <CodSalida>
+                            <xsl:value-of select="if ($Valida='@OK') then '00' else &#xA;if ($Valida='@AV') then '04' else &#xA;if ($Valida='@ER') then '16' else '16'"/>
+                        </CodSalida>
+                        <InfoBE>
+                            <Atomico>
+                                <xsl:value-of select="$InfoBE/Atomico"/>
+                            </Atomico>
+                            <BackEnd>
+                                <xsl:value-of select="$InfoBE/BackEnd"/>
+                            </BackEnd>
+                            <CodDWH>
+                                <xsl:value-of select="$InfoBE/CodDWH"/>
+                            </CodDWH>
+                        </InfoBE>
+                        <TramaEntrada>
+                            <xsl:value-of select="$dataEntrada"/>
+                        </TramaEntrada>
+                        <TramaSalida>
+                            <xsl:value-of select="$dataSalida"/>
+                        </TramaSalida>
+                    </Codigos>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="MensajeUsuario">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>722</pd:x>
+        <pd:y>99</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/MensajeUsuario.process</processName>
+        </config>
+        <pd:inputBindings>
+            <Entrada>
+                <CodTrx>
+                    <xsl:value-of select="$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/CodTrx"/>
+                </CodTrx>
+                <CodSalida>
+                    <xsl:value-of select="$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/CodSalida"/>
+                </CodSalida>
+                <BackEnd>
+                    <xsl:value-of select="$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd"/>
+                </BackEnd>
+                <pfx:Informacion>
+                    <pfx:Codigo>
+                        <xsl:value-of select="$Start/root/pfx:Informacion/pfx:Codigo"/>
+                    </pfx:Codigo>
+                    <pfx:Resultado>
+                        <xsl:value-of select="$Start/root/pfx:Informacion/pfx:Resultado"/>
+                    </pfx:Resultado>
+                    <pfx:Mensaje>
+                        <xsl:value-of select="if ($Start/root/UsaMsjUsr) then $Start/root/pfx:Informacion/pfx:Mensaje else ''"/>
+                    </pfx:Mensaje>
+                </pfx:Informacion>
+                <IntentosFallidosRestantes>
+                    <xsl:value-of select="$Start/root/IntentosFallidosRestantes"/>
+                </IntentosFallidosRestantes>
+            </Entrada>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Notify LogHob">
+        <pd:type>com.tibco.plugin.waitnotify.NotifyActivity</pd:type>
+        <pd:resourceType>ae.activities.notifyActivity</pd:resourceType>
+        <pd:x>578</pd:x>
+        <pd:y>298</pd:y>
+        <config>
+            <sharedConfig>/Resources/SharedVariable/LogHob.sharednotify</sharedConfig>
+        </config>
+        <pd:inputBindings>
+            <input>
+                <root>
+                    <Job>
+                        <xsl:value-of select="concat('Recurso: ',$Get-Datos-Cabecera/cabecera/ProcessStarter/RequestURI, ' | Job-', $_processContext/ns3:ProcessContext/ProcessId,' | ',&#xA;$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd)"/>
+                    </Job>
+                    <text>
+                        <xsl:value-of select="string($Map-Data/root)"/>
+                    </text>
+                </root>
+            </input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Set Numero Secuencia + 1">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>401</pd:x>
+        <pd:y>465</pd:y>
+        <config>
+            <showResult>true</showResult>
+            <variableConfig>/Resources/SharedVariable/LogHobNroBE.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <Numero>
+                <xsl:value-of select="$Get-Numero-Secuencia/Numero + 1"/>
+            </Numero>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>561</pd:x>
+        <pd:y>183</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="BE" select="concat(' (',$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/InfoBE/BackEnd,')')"/>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="if (exists($Start/root/InicioCoordinador) or exists($Start/root/FinCoordinador)) then $Get-Datos-Cabecera/cabecera/ProcessStarter/RequestURI &#xA;else BW:getCurrentProcessName($_processContext/ns3:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <xsl:if test="not(exists($Start/root/InicioCoordinador))">
+                    <Mensaje>
+                        <titulo>
+                            <xsl:value-of select="concat('Respuesta', if (exists($Start/root/Atomico)) then $BE else '')"/>
+                        </titulo>
+                        <mensaje>
+                            <xsl:value-of select="$Map-Tramas-Info-Cods-y-Rsp-BE/Codigos/TramaSalida"/>
+                        </mensaje>
+                    </Mensaje>
+                </xsl:if>
+                <xsl:if test="not(exists($MensajeUsuario)) and (exists($Start/root/Atomico))">
+                    <Mensaje>
+                        <titulo>
+                            <xsl:value-of select="concat('Informacion',$BE)"/>
+                        </titulo>
+                        <mensaje>
+                            <xsl:value-of select="tib:render-xml($Start/root/pfx:Informacion, true(), false())"/>
+                        </mensaje>
+                    </Mensaje>
+                </xsl:if>
+                <xsl:if test="exists($MensajeUsuario)">
+                    <Mensaje>
+                        <titulo>
+                            <xsl:value-of select="concat('Resultado formateado',$BE)"/>
+                        </titulo>
+                        <mensaje>
+                            <xsl:value-of select="tib:render-xml($MensajeUsuario/pfx:Informacion, true(), false())"/>
+                        </mensaje>
+                    </Mensaje>
+                </xsl:if>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="concat('Entrada LogHob', if (exists($Start/root/Atomico)) then $BE else '')"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="tib:render-xml($Map-Data/root, true(), false())"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EscribeEnElLog Error">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>860</pd:x>
+        <pd:y>262</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns3:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="'Catch excepcion'"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="tib:render-xml($Catch/exceptiondata/*, true(), true())"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Set Componentes y Codigos DWH">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>226</pd:x>
+        <pd:y>42</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/CodigosDWH.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <codigosDWH>
+                <Definicion>
+                    <Atomico>
+                        <xsl:value-of select="''"/>
+                    </Atomico>
+                    <BackEnd>
+                        <xsl:value-of select="''"/>
+                    </BackEnd>
+                    <CodDWH>
+                        <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoDWH"/>
+                    </CodDWH>
+                </Definicion>
+            </codigosDWH>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>EscribeEnElLog Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Numero Secuencia + 1</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Informacion Coordinador</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Informacion Coordinador</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Numero Secuencia</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Datos Cabecera</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Datos Cabecera</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>MensajeUsuario</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Componentes y Codigos DWH</pd:from>
+        <pd:to>Map Tramas, Info, Cods y Rsp BE</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Componentes y Codigos DWH</pd:to>
+        <pd:xpathDescription>Ejecucion BE</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($Start/root/Atomico)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Tramas, Info, Cods y Rsp BE</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Tramas, Info, Cods y Rsp BE</pd:from>
+        <pd:to>MensajeUsuario</pd:to>
+        <pd:xpathDescription>BE Ejecucion Ok</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/ResultadoAtomico='true' and exists($Start/root/Atomico)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Numero Secuencia</pd:from>
+        <pd:to>Set Numero Secuencia + 1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Map Tramas, Info, Cods y Rsp BE</pd:to>
+        <pd:xpathDescription>Coodinador</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($Start/root/InicioCoordinador) or exists($Start/root/FinCoordinador)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Notify LogHob</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Tramas, Info, Cods y Rsp BE</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog Error</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Componentes y Codigos DWH</pd:from>
+        <pd:to>Set Componentes y Codigos DWH</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Componentes y Codigos DWH</pd:from>
+        <pd:to>Map Tramas, Info, Cods y Rsp BE</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-65536</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

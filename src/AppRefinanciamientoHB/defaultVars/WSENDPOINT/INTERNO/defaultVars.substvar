@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>CallCoFO</name>
+			<value>https://islbwtoc03.scisb.isban.corp:8500/callCO-FO</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1571075915142</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Timeout</name>
+			<value>3000000000000000</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1547559858966</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>ValidaDesafio</name>
+			<value>https://viphbusi2-gbmrfc-tbm.cl.bsch:14710/Services/AppAutorizador/wsCL1CO-VALDesafio-CreaOTP</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1553172281435</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

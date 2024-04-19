@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SolicitaDesafio.xsd"
+	 xmlns:ns0="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd"
+	 xmlns:ns1="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallengeResponse.xsd"
+	 xmlns:ns2="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd"
+	 targetNamespace="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SolicitaDesafio.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="Informacion.xsd"/>
+	<xs:import namespace="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallengeResponse.xsd" schemaLocation="SoftToken_getChallengeResponse.xsd"/>
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Datos-Arquitectura.xsd" schemaLocation="Datos-Arquitectura.xsd"/>
+	<xs:element name="Entrada">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RutCliente" type="xs:string"/>
+				<xs:element name="Funcionalidad" type="xs:string" minOccurs="0"/>
+				<xs:element name="SoftToken" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TipoDesafio" type="xs:string" minOccurs="0"/>
+							<xs:element name="Monto" type="xs:string" minOccurs="0"/>
+							<xs:element name="NumeroCuenta" type="xs:string" minOccurs="0"/>
+							<xs:choice minOccurs="0">
+								<xs:element name="CreditoConsumo">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="MontoLD" type="xs:string"/>
+											<xs:element name="NombreCliente" type="xs:string"/>
+											<xs:element name="TipoCuenta" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PagoEnLinea">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="CodNorCarro" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="RecargaCelular">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NroTelefono" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="SuperGiro" type="xs:boolean"/>
+								<xs:element name="TEFaTerceros">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NombreDestino" type="xs:string"/>
+											<xs:element name="RutDestino" type="xs:string"/>
+											<xs:element name="TipoCuentaDestino" type="xs:string"/>
+											<xs:element name="NumeroCuentaDestino" type="xs:string"/>
+											<xs:element name="CodigoBanco" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="PagoTCR">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NombreTCR" type="xs:string"/>
+											<xs:element name="NroPan" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Salida">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns0:Informacion"/>
+				<xs:choice minOccurs="0">
+					<xs:element name="Escalares" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="NumeroTarjeta" type="xs:string" minOccurs="0"/>
+								<xs:element name="TipoAutentificacion" type="xs:string" minOccurs="0"/>
+								<xs:element name="GlosaTipoAutentificacion" type="xs:string" minOccurs="0"/>
+								<xs:element name="MatrizDesafio" type="xs:string" minOccurs="0"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element ref="ns1:getChallengeResponse"/>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Body">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns2:Cabecera" minOccurs="0"/>
+				<xs:element ref="Entrada"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

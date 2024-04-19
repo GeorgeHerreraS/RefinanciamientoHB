@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 targetNamespace="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallenge.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:element name="getChallengeRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Cabecera" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="HOST" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="USUARIO-ALT" type="xs:string" minOccurs="0"/>
+										<xs:element name="TERMINAL-ALT" type="xs:string" minOccurs="0"/>
+										<xs:element name="CANAL-ID" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CanalFisico" type="xs:string" minOccurs="0"/>
+							<xs:element name="CanalLogico" type="xs:string" minOccurs="0"/>
+							<xs:element name="RutCliente" type="xs:string" minOccurs="0"/>
+							<xs:element name="RutUsuario" type="xs:string" minOccurs="0"/>
+							<xs:element name="IpCliente" type="xs:string" minOccurs="0"/>
+							<xs:element name="InfoDispositivo" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Entrada" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="userId" type="xs:string"/>
+							<xs:element name="userName" type="xs:string" minOccurs="0"/>
+							<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+							<xs:element name="challengeType" type="xs:string"/>
+							<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+							<xs:element name="tokenChallengeSummary" type="xs:string" minOccurs="0"/>
+							<xs:element name="qrSize" type="xs:string" minOccurs="0"/>
+							<xs:element name="transactionData" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="name" type="xs:string" minOccurs="0"/>
+													<xs:element name="value" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="getChallengeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="INFO">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="CODERR" type="xs:string"/>
+							<xs:element name="DESERR" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="OUTPUT" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="userId" type="xs:string" minOccurs="0"/>
+							<xs:element name="group" type="xs:string" minOccurs="0"/>
+							<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+							<xs:element name="transactionid" type="xs:string" minOccurs="0"/>
+							<xs:element name="challengeType" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element name="ListChallenges" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="token" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="userId" type="xs:string" minOccurs="0"/>
+													<xs:element name="group" type="xs:string" minOccurs="0"/>
+													<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+													<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+													<xs:element name="nameSet" type="xs:string" minOccurs="0"/>
+													<xs:element name="state" type="xs:string" minOccurs="0"/>
+													<xs:element name="challengeTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="offlineChallengeQRCode" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="customs" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="userId" type="xs:string" minOccurs="0"/>
+													<xs:element name="group" type="xs:string" minOccurs="0"/>
+													<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+													<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+													<xs:element name="nameSet" type="xs:string" minOccurs="0"/>
+													<xs:element name="state" type="xs:string" minOccurs="0"/>
+													<xs:element name="challengeTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="card" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="userId" type="xs:string" minOccurs="0"/>
+													<xs:element name="group" type="xs:string" minOccurs="0"/>
+													<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+													<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+													<xs:element name="nameSet" type="xs:string" minOccurs="0"/>
+													<xs:element name="state" type="xs:string" minOccurs="0"/>
+													<xs:element name="challengeTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="listCoordenates" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="password" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="userId" type="xs:string" minOccurs="0"/>
+													<xs:element name="group" type="xs:string" minOccurs="0"/>
+													<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+													<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+													<xs:element name="nameSet" type="xs:string" minOccurs="0"/>
+													<xs:element name="state" type="xs:string" minOccurs="0"/>
+													<xs:element name="challengeTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+													<xs:element name="expirateDate" type="xs:string" minOccurs="0"/>
+													<xs:element name="changeRequired" type="xs:string" minOccurs="0"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="otp" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="userId" type="xs:string" minOccurs="0"/>
+													<xs:element name="group" type="xs:string" minOccurs="0"/>
+													<xs:element name="repositoryId" type="xs:string" minOccurs="0"/>
+													<xs:element name="serialNumber" type="xs:string" minOccurs="0"/>
+													<xs:element name="nameSet" type="xs:string" minOccurs="0"/>
+													<xs:element name="state" type="xs:string" minOccurs="0"/>
+													<xs:element name="challengeTypes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="responseStatus" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="code" type="xs:string" minOccurs="0"/>
+										<xs:element name="description" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

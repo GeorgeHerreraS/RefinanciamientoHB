@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx2="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:pfx3="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:pfx5="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SoftokenConsultas.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/EngineTypes" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:ns4="http://santander.cl/ws/schemas" xmlns:ns3="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallenge.xsd" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenActivation.xsd" xmlns:ns5="http://itg.isban.cl/BackEndProcess/Resources/Schemas/authenticateChallenge.xsd" xmlns:ns7="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns12="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:ns11="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenList" xmlns:ns10="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/transactionStatus.xsd">
+    <xsd:import namespace="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/SoftokenConsultas.xsd" schemaLocation="/Resources/Schemas/SoftokenConsultas.xsd"/>
+    <pd:name>Process/Main/Seguridad/CL1CO_SoftokenConsultas.process</pd:name>
+    <pd:description/>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="request_msgJSon" type="xsd:string"/>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <response_msgJSon>
+            <xsl:value-of select="concat($Render-JSON/ns1:ActivityOutputClass/jsonString,$JSONSalidaCatch/root/jsonString)"/>
+        </response_msgJSon>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="response_msgJSon" type="xsd:string"/>
+    </pd:endType>
+    <pd:endX>755</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/AppPersonas2.0/Process/CL1CO_SoftokenConsultas</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1130</pd:x>
+        <pd:y>35</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=ValidationException namespace=http://schemas.tibco.com/bw/plugins/xml/5.0/RESTJSONExceptions</fault>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Inicio Coordinador">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>283</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/InicioCoordinador.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <ProcessName>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns2:ProcessContext/ProcessId)"/>
+                </ProcessName>
+                <request_json>
+                    <xsl:value-of select="$Start/request_msgJSon"/>
+                </request_json>
+                <logHob>
+                    <Funcionalidad>
+                        <xsl:value-of select="if (exists($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:transactionId)) then 'SOFTTOKEN - TRANSACTION STATUS'&#xA;else 'SOFTTOKEN - USER TOKEN LIST'"/>
+                    </Funcionalidad>
+                    <RutCliente>
+                        <xsl:value-of select="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:RutCliente"/>
+                    </RutCliente>
+                    <CtaOrig>
+                        <xsl:value-of select="''"/>
+                    </CtaOrig>
+                    <CtaDtn>
+                        <xsl:value-of select="''"/>
+                    </CtaDtn>
+                    <TrnMonto>
+                        <xsl:value-of select="''"/>
+                    </TrnMonto>
+                </logHob>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JSONSalidaCatch">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1004</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/Catch.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Coordinador>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns2:ProcessContext/ProcessId)"/>
+                </Coordinador>
+                <Catch>
+                    <xsl:copy-of select="$Catch/exceptiondata"/>
+                </Catch>
+                <_error>
+                    <xsl:copy-of select="$_error/ns2:ErrorReport"/>
+                </_error>
+                <xsl:choose>
+                    <xsl:when test="string($Map-Respuesta/pfx5:Salida/ns7:Informacion)!=''">
+                        <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/ns7:Informacion"/>
+                    </xsl:when>
+                    <xsl:when test="string($WS_SoftToken/root/ns7:Informacion)!=''">
+                        <xsl:copy-of select="$WS_SoftToken/root/ns7:Informacion"/>
+                    </xsl:when>
+                </xsl:choose>
+                <InfoLogHob>
+                    <GrabaLogHob>
+                        <xsl:value-of select="false()"/>
+                    </GrabaLogHob>
+                    <TramaEntrada>
+                        <xsl:copy-of select="$Parse-JSON/ns1:ActivityOutputClass/*"/>
+                    </TramaEntrada>
+                    <TramaSalida>
+                        <xsl:copy-of select="$Map-Respuesta/*"/>
+                    </TramaSalida>
+                    <AtomicoOk>
+                        <xsl:value-of select="false()"/>
+                    </AtomicoOk>
+                </InfoLogHob>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Respuesta">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>481</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element ref="pfx5:Salida"/>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="varFuncionalidad" select="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad"/>
+            <pfx5:Salida>
+                <xsl:choose>
+                    <!--FUNCIONALIDAD Y ESQUEMA NO RELACIONADOS-->
+                    <xsl:when test="($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad!='transactionStatus' )&#xA;and ($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad!='userTokenList')">
+                        <ns7:Informacion>
+                            <ns7:Codigo>
+                                <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/CodigoError"/>
+                            </ns7:Codigo>
+                            <ns7:Resultado>
+                                <xsl:value-of select="'funcionalidad erronea'"/>
+                            </ns7:Resultado>
+                            <ns7:Mensaje>
+                                <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/MensajeError"/>
+                            </ns7:Mensaje>
+                        </ns7:Informacion>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="$WS_SoftToken/root/ns7:Informacion"/>
+                        <xsl:choose>
+                            <xsl:when test="$varFuncionalidad = 'transactionStatus'">
+                                <pfx5:transactionStatusResponse>
+                                    <xsl:if test="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:transactionId">
+                                        <pfx5:transactionId>
+                                            <xsl:value-of select="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:transactionId"/>
+                                        </pfx5:transactionId>
+                                    </xsl:if>
+                                    <xsl:if test="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:status">
+                                        <pfx5:status>
+                                            <xsl:value-of select="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:status"/>
+                                        </pfx5:status>
+                                    </xsl:if>
+                                    <pfx5:responseStatus>
+                                        <xsl:if test="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:responseStatus/ns10:code">
+                                            <pfx5:code>
+                                                <xsl:value-of select="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:responseStatus/ns10:code"/>
+                                            </pfx5:code>
+                                        </xsl:if>
+                                        <xsl:if test="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:responseStatus/ns10:description">
+                                            <pfx5:description>
+                                                <xsl:value-of select="$WS_SoftToken/root/ns10:transactionStatusResponse/ns10:OUTPUT/ns10:responseStatus/ns10:description"/>
+                                            </pfx5:description>
+                                        </xsl:if>
+                                    </pfx5:responseStatus>
+                                </pfx5:transactionStatusResponse>
+                            </xsl:when>
+                            <xsl:when test="$varFuncionalidad = 'userTokenList'">
+                                <pfx5:userTokenListResponse>
+                                    <pfx5:TokenList>
+                                        <xsl:for-each select="$WS_SoftToken/root/ns11:userTokenList/ns11:OUTPUT/ns11:userTokenListResponse/ns11:TokenList/ns11:tokens">
+                                            <pfx5:tokens>
+                                                <xsl:if test="ns11:serialNumber">
+                                                    <pfx5:serialNumber>
+                                                        <xsl:value-of select="ns11:serialNumber"/>
+                                                    </pfx5:serialNumber>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:name">
+                                                    <pfx5:name>
+                                                        <xsl:value-of select="ns11:name"/>
+                                                    </pfx5:name>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:state">
+                                                    <pfx5:state>
+                                                        <xsl:value-of select="ns11:state"/>
+                                                    </pfx5:state>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:tokenGroup">
+                                                    <pfx5:tokenGroup>
+                                                        <xsl:value-of select="ns11:tokenGroup"/>
+                                                    </pfx5:tokenGroup>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:tokenType">
+                                                    <pfx5:tokenType>
+                                                        <xsl:value-of select="ns11:tokenType"/>
+                                                    </pfx5:tokenType>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:activationState">
+                                                    <pfx5:activationState>
+                                                        <xsl:value-of select="ns11:activationState"/>
+                                                    </pfx5:activationState>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:loadDate">
+                                                    <pfx5:loadDate>
+                                                        <xsl:value-of select="ns11:loadDate"/>
+                                                    </pfx5:loadDate>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:lastUsedDate">
+                                                    <pfx5:lastUsedDate>
+                                                        <xsl:value-of select="ns11:lastUsedDate"/>
+                                                    </pfx5:lastUsedDate>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:registrationDate">
+                                                    <pfx5:registrationDate>
+                                                        <xsl:value-of select="ns11:registrationDate"/>
+                                                    </pfx5:registrationDate>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:mobilePlatform">
+                                                    <pfx5:mobilePlatform>
+                                                        <xsl:value-of select="ns11:mobilePlatform"/>
+                                                    </pfx5:mobilePlatform>
+                                                </xsl:if>
+                                                <xsl:if test="ns11:mobileVersion">
+                                                    <pfx5:mobileVersion>
+                                                        <xsl:value-of select="ns11:mobileVersion"/>
+                                                    </pfx5:mobileVersion>
+                                                </xsl:if>
+                                            </pfx5:tokens>
+                                        </xsl:for-each>
+                                    </pfx5:TokenList>
+                                    <pfx5:responseStatus>
+                                        <pfx5:code>
+                                            <xsl:value-of select="$WS_SoftToken/root/ns11:userTokenList/ns11:OUTPUT/ns11:userTokenListResponse/ns11:responseStatus/ns11:code"/>
+                                        </pfx5:code>
+                                        <pfx5:description>
+                                            <xsl:value-of select="$WS_SoftToken/root/ns11:userTokenList/ns11:OUTPUT/ns11:userTokenListResponse/ns11:responseStatus/ns11:description"/>
+                                        </pfx5:description>
+                                    </pfx5:responseStatus>
+                                </pfx5:userTokenListResponse>
+                            </xsl:when>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </pfx5:Salida>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>153</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ValidateOutputEnable>true</ValidateOutputEnable>
+            <ActivityOutputEditor ref="pfx5:Entrada"/>
+        </config>
+        <pd:inputBindings>
+            <ns1:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$Start/request_msgJSon"/>
+                </jsonString>
+            </ns1:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>627</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ActivityInputEditor ref="pfx5:Salida"/>
+        </config>
+        <pd:inputBindings>
+            <ns1:ActivityInputClass>
+                <xsl:copy-of select="$Map-Respuesta/pfx5:Salida"/>
+            </ns1:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="WS_SoftToken">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>468</pd:x>
+        <pd:y>184</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Atomicos/WS_SoftToken.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:choose>
+                    <xsl:when test="count($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:transactionId)>0">
+                        <transactionStatus>
+                            <xsl:value-of select="true()"/>
+                        </transactionStatus>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <userTokenList>
+                            <xsl:value-of select="true()"/>
+                        </userTokenList>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:if test="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad">
+                    <challengeType>
+                        <xsl:value-of select="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad"/>
+                    </challengeType>
+                </xsl:if>
+                <RutCliente>
+                    <xsl:value-of select="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:RutCliente"/>
+                </RutCliente>
+                <xsl:if test="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:transactionId">
+                    <transactionId>
+                        <xsl:value-of select="$Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:transactionId"/>
+                    </transactionId>
+                </xsl:if>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Set Informacion Coordinador LogHob Ok">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>623</pd:x>
+        <pd:y>166</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InformacionCoordinadorLogHob.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:copy-of select="$Map-Respuesta/pfx5:Salida/ns7:Informacion"/>
+                <GrabarInicioCoordinador>
+                    <xsl:value-of select="false()"/>
+                </GrabarInicioCoordinador>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Set Informacion Coordinador LogHob Error">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>882</pd:x>
+        <pd:y>49</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InformacionCoordinadorLogHob.jobsharedvariable</variableConfig>
+            <showResult>true</showResult>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:copy-of select="$JSONSalidaCatch/root/ns7:Informacion"/>
+                <GrabarInicioCoordinador>
+                    <xsl:value-of select="not(exists($Inicio-Coordinador/root/resultado)) or $Inicio-Coordinador/root/resultado!='ok'"/>
+                </GrabarInicioCoordinador>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SetVariable">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>279</pd:x>
+        <pd:y>181</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoCabecera.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <cabecera>
+                <HOST>
+                    <USUARIO-ALT>
+                        <xsl:value-of select="''"/>
+                    </USUARIO-ALT>
+                </HOST>
+            </cabecera>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>Inicio Coordinador</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>JSONSalidaCatch</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JSONSalidaCatch</pd:from>
+        <pd:to>Set Informacion Coordinador LogHob Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>WS_SoftToken</pd:from>
+        <pd:to>Map Respuesta</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Inicio Coordinador</pd:from>
+        <pd:to>SetVariable</pd:to>
+        <pd:xpathDescription>Funcionalidad Ok</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad='transactionStatus' )
+or ($Parse-JSON/ns1:ActivityOutputClass/pfx5:Entrada/pfx5:Funcionalidad='userTokenList')</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Respuesta</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Inicio Coordinador</pd:from>
+        <pd:to>Map Respuesta</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Respuesta</pd:from>
+        <pd:to>Set Informacion Coordinador LogHob Ok</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Informacion Coordinador LogHob Ok</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Informacion Coordinador LogHob Error</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SetVariable</pd:from>
+        <pd:to>WS_SoftToken</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

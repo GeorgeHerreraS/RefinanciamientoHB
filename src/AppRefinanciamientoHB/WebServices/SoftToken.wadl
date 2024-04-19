@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ns0:application xmlns:ns0="http://wadl.dev.java.net/2009/02" name="appSoftToken">
+    <ns0:resources name="ServicioRest" base="https://localhost:11210">
+        <ns0:resource id="CONAutenticacion" path="softToken/consulta/autenticacion">
+            <ns0:doc/>
+            <ns0:method id="postAutenticacion" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestAutenticacion">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseAutenticacion" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="CONSolicitudDesafio" path="softToken/consulta/solicitudDesafio">
+            <ns0:doc/>
+            <ns0:method id="postSolicitudDesafio" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestSolicitudDesafio">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseSolicitudDesafio" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="CONEstadoTransaccion" path="softToken/consulta/estadoTransaccion">
+            <ns0:doc/>
+            <ns0:method id="postEstadoTransaccion" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestEstadoTransaccion">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseEstadoTransaccion" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="ELIEliminacionToken" path="softToken/eliminacion/eliminacionToken">
+            <ns0:doc/>
+            <ns0:method id="postEliminacionToken" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestEliminacionToken">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseEliminacionToken" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="CONInformacionCliente" path="softToken/consulta/informacionCliente">
+            <ns0:doc/>
+            <ns0:method id="postInformacionCliente" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestInformacionCliente">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseInformacionCliente" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="ConTokenActivation" path="softToken/consulta/tokenActivation">
+            <ns0:doc/>
+            <ns0:method id="postTokenActivation" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestTokenActivation">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseTokenActivation" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="CONTokensCliente" path="softToken/consulta/tokensCliente">
+            <ns0:doc/>
+            <ns0:method id="postTokensCliente" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestTokensCliente">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseTokensCliente" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+        <ns0:resource id="ACTTokenUpdate" path="softToken/actualizacion/tokenUpdate">
+            <ns0:doc/>
+            <ns0:method id="postTokenUpdate" name="POST">
+                <ns0:doc/>
+                <ns0:request name="RequestTokenUpdate">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:request>
+                <ns0:response name="ResponseTokenUpdate" status="200">
+                    <ns0:representation mediaType="application/json"/>
+                </ns0:response>
+            </ns0:method>
+        </ns0:resource>
+    </ns0:resources>
+</ns0:application>

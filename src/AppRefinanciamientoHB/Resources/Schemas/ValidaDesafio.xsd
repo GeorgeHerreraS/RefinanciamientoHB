@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/ValidaDesafio.xsd"
+	 xmlns:ns0="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd"
+	 targetNamespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/ValidaDesafio.xsd"
+	 elementFormDefault="qualified"
+	 attributeFormDefault="unqualified">
+	<xs:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="Informacion.xsd"/>
+	<xs:element name="Validar_Desafio_Request">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RutCliente" type="xs:string"/>
+				<xs:element name="MatrizDesafio" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Validar_Desafio_Response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns0:Informacion"/>
+				<xs:element name="Salida">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="GlosaRespuesta" type="xs:string"/>
+							<xs:element name="IntentosFallidosRestantes" type="xs:string"/>
+							<xs:element name="Resultado" type="xs:string"/>
+							<xs:element name="CodigoOTP" type="xs:string"/>
+							<xs:element name="IdTrxOTP" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/pe/EngineTypes" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/WriteToLogActivitySchema">
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Utilities/Catch.process</pd:name>
+    <pd:description>Graba LogHob en caso de un Catch en la llamada a un servicio atomico</pd:description>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:choice>
+                        <xsd:element name="Coordinador" type="xsd:string"/>
+                        <xsd:element name="Atomico" type="xsd:string"/>
+                    </xsd:choice>
+                    <xsd:element name="Catch">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:any processContents="lax"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="_error">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:any processContents="lax"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element ref="pfx:Informacion" minOccurs="0"/>
+                    <xsd:element name="InfoLogHob">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="GrabaLogHob" type="xsd:boolean"/>
+                                <xsd:element name="TramaEntrada">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:any minOccurs="0" processContents="lax"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="TramaSalida">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:any minOccurs="0" processContents="lax"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="AtomicoOk" type="xsd:boolean" minOccurs="0"/>
+                                <xsd:element name="UsaMsjUsr" type="xsd:boolean" minOccurs="0"/>
+                                <xsd:element name="IntentosFallidosRestantes" type="xsd:boolean" minOccurs="0"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>36</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:choose>
+                <xsl:when test="$Start/root/InfoLogHob/GrabaLogHob='true'">
+                    <xsl:copy-of select="$GrabaLogHob-Catch/pfx:Informacion"/>
+                </xsl:when>
+                <xsl:when test="not(exists($Start/root/pfx:Informacion))">
+                    <xsl:copy-of select="$Map-Informacion/pfx:Informacion"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:copy-of select="$Start/root/pfx:Informacion"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            <jsonString>
+                <xsl:value-of select="normalize-space($Render-JSON/ns2:ActivityOutputClass/jsonString)"/>
+            </jsonString>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx:Informacion"/>
+                    <xsd:element name="jsonString" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>929</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/Catch</pd:targetNamespace>
+    <pd:activity name="Render JSON Msg">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>196</pd:x>
+        <pd:y>172</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>false</removeRootElementForInput>
+            <ActivityInputEditor>
+                <xsd:element name="Msg" type="xsd:string"/>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <Msg>
+                    <xsl:value-of select="$Start/root/_error/ns0:ErrorReport/Msg"/>
+                </Msg>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Informacion">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>346</pd:x>
+        <pd:y>175</pd:y>
+        <config>
+            <element ref="pfx:Informacion"/>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="MsjSaltoLinea" select="substring-before(substring-after($Render-JSON-Msg/ns2:ActivityOutputClass/jsonString, '&quot;Msg&quot;:&quot;'), '\n')"/>
+            <xsl:variable name="Msj" select="if ($MsjSaltoLinea='') then substring-before(substring-after($Render-JSON-Msg/ns2:ActivityOutputClass/jsonString, '&quot;Msg&quot;:&quot;'), '&quot;') else $MsjSaltoLinea"/>
+            <xsl:variable name="ProcessStack" select="if (tib:index-of($Start/root/_error/ns0:ErrorReport/ProcessStack, '>')>0) &#xA;then substring-after($Start/root/_error/ns0:ErrorReport/ProcessStack, '>') else $Start/root/_error/ns0:ErrorReport/ProcessStack"/>
+            <pfx:Informacion>
+                <pfx:Codigo>
+                    <xsl:value-of select="if (exists($Start/root/Atomico)) then $_globalVariables/ns:GlobalVariables/INFO/CodigoError&#xA;else $_globalVariables/ns:GlobalVariables/INFO/CodigoError"/>
+                </pfx:Codigo>
+                <pfx:Resultado>
+                    <xsl:value-of select="concat('Job-',$_processContext/ns0:ProcessContext/ProcessId,'; Error en [',$ProcessStack,'] ',$Start/root/_error/ns0:ErrorReport/MsgCode,' ',$Msj)"/>
+                </pfx:Resultado>
+                <pfx:Mensaje>
+                    <xsl:value-of select="$_globalVariables/ns:GlobalVariables/INFO/MensajeError"/>
+                </pfx:Mensaje>
+            </pfx:Informacion>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>135</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="concat($Start/root/Coordinador, $Start/root/Atomico)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="'Catch'"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="tib:render-xml($Start/root/Catch/*,true(),false())"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Null">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>364</pd:x>
+        <pd:y>35</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>796</pd:x>
+        <pd:y>172</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>false</removeRootElementForInput>
+            <ActivityInputEditor ref="pfx:Informacion"/>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInputClass>
+                <xsl:choose>
+                    <xsl:when test="exists($Start/root/pfx:Informacion)">
+                        <xsl:copy-of select="$Start/root/pfx:Informacion"/>
+                    </xsl:when>
+                    <xsl:when test="$Start/root/InfoLogHob/GrabaLogHob='false'">
+                        <xsl:copy-of select="$Map-Informacion/pfx:Informacion"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="$GrabaLogHob-Catch/pfx:Informacion"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </ns2:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Null-1">
+        <pd:type>com.tibco.plugin.timer.NullActivity</pd:type>
+        <pd:resourceType>ae.activities.null</pd:resourceType>
+        <pd:x>620</pd:x>
+        <pd:y>35</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Render JSON Msg</pd:from>
+        <pd:to>Map Informacion</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Informacion</pd:from>
+        <pd:to>Null</pd:to>
+        <pd:xpathDescription/>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>Null</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null-1</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:xpathDescription>Coordinador</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>string($Start/root/Coordinador)!=''</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Atomico</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>Render JSON Msg</pd:to>
+        <pd:xpathDescription>Sin Informacion</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>not(exists($Start/root/pfx:Informacion))</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Null</pd:from>
+        <pd:to>Null-1</pd:to>
+        <pd:xpathDescription>NO graba en LogHob</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

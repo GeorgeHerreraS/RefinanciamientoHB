@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx6="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:pfx7="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenList" xmlns:pfx="http://itg.isban.cl/BackEndProcess/Resources/Schemas/userTokenActivation.xsd" xmlns:pfx2="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/transactionStatus.xsd" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:pfx3="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:pfx5="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/Cabecera.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/pe/EngineTypes" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns4="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:ns3="pfx4" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:pfx15="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenActivation.xsd" xmlns:pfx13="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallenge.xsd" xmlns:pfx14="http://itg.isban.cl/BackEndProcess/Resources/Schemas/authenticateChallenge.xsd">
+    <xsd:import namespace="http://www.tibco.com/ns/no_namespace_schema_location/Resources/Schemas/Cabecera.xsd" schemaLocation="/Resources/Schemas/Cabecera.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/BackEndProcess/Resources/Schemas/getChallenge.xsd" schemaLocation="/Resources/Schemas/SoftToken_getChallenge.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/BackEndProcess/Resources/Schemas/authenticateChallenge.xsd" schemaLocation="/Resources/Schemas/SoftToken_authenticateChallenge.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenActivation.xsd" schemaLocation="/Resources/Schemas/SoftToken_tokenActivation.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/transactionStatus.xsd" schemaLocation="/Resources/Schemas/SoftToken_transactionStatus.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/schemas/AppGenericosGeneral/Resources/Schemas/userTokenList" schemaLocation="/Resources/Schemas/SoftToken_userTokenList.xsd"/>
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Atomicos/WS_SoftToken.process</pd:name>
+    <pd:description>getChallenge = solicitar un desafío para un usuario
+authenticateChallenge = autenticar un desafío solicitado previamente
+userTokenActivation = Método genera los códigos para activación, activationCode (QR para desplegar por pantalla) y mobileActivationCode (Código para realizar la activación desde la App Banco).</pd:description>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:choice>
+                        <xsd:element name="getChallenge" type="xsd:boolean"/>
+                        <xsd:element name="authenticateChallenge" type="xsd:boolean"/>
+                        <xsd:element name="userTokenActivation" type="xsd:boolean"/>
+                        <xsd:element name="transactionStatus" type="xsd:boolean"/>
+                        <xsd:element name="userTokenList" type="xsd:boolean"/>
+                    </xsd:choice>
+                    <xsd:element name="challengeType" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="RutCliente" type="xsd:string"/>
+                    <xsd:element name="transactionId" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="transactionData" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Monto" type="xsd:string"/>
+                                <xsd:element name="TipoCuenta" type="xsd:string"/>
+                                <xsd:element name="NroCuenta" type="xsd:string"/>
+                                <xsd:choice minOccurs="0">
+                                    <xsd:element name="CreditoConsumo">
+                                        <xsd:complexType>
+                                            <xsd:sequence>
+                                                <xsd:element name="Nombre" type="xsd:string"/>
+                                                <xsd:element name="MontoLD" type="xsd:string"/>
+                                            </xsd:sequence>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                </xsd:choice>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>52</pd:startX>
+    <pd:startY>289</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:choose>
+                <xsl:when test="exists($Map-Entrada/root/request/ns4:Informacion)">
+                    <xsl:copy-of select="$Map-Entrada/root/request/ns4:Informacion"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:copy-of select="$resultado/root/ns4:Informacion"/>
+                    <xsl:choose>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/root/pfx13:getChallengeResponse)">
+                            <xsl:copy-of select="$Parse-JSON/ns:ActivityOutputClass/root/pfx13:getChallengeResponse"/>
+                        </xsl:when>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/root/pfx14:authenticateChallengeResponse)">
+                            <xsl:copy-of select="$Parse-JSON/ns:ActivityOutputClass/root/pfx14:authenticateChallengeResponse"/>
+                        </xsl:when>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/root/pfx15:userTokenActivation)">
+                            <xsl:copy-of select="$Parse-JSON/ns:ActivityOutputClass/root/pfx15:userTokenActivation"/>
+                        </xsl:when>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/root/pfx2:transactionStatusResponse)">
+                            <xsl:copy-of select="$Parse-JSON/ns:ActivityOutputClass/root/pfx2:transactionStatusResponse"/>
+                        </xsl:when>
+                        <xsl:when test="exists($Parse-JSON/ns:ActivityOutputClass/root/pfx7:userTokenList)">
+                            <xsl:copy-of select="$Parse-JSON/ns:ActivityOutputClass/root/pfx7:userTokenList"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:otherwise>
+            </xsl:choose>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="ns4:Informacion"/>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element ref="pfx13:getChallengeResponse"/>
+                        <xsd:element ref="pfx14:authenticateChallengeResponse"/>
+                        <xsd:element ref="pfx15:userTokenActivation"/>
+                        <xsd:element ref="pfx2:transactionStatusResponse"/>
+                        <xsd:element ref="pfx7:userTokenList"/>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>704</pd:endX>
+    <pd:endY>425</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <resultado>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="elemento" type="xsd:string"/>
+                        <xsd:element ref="ns4:Informacion"/>
+                        <xsd:element name="param" type="xsd:string" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </resultado>
+    </pd:processVariables>
+    <pd:targetNamespace>http://itg.isban.cl/BackEndProcess/WS_SoftToken</pd:targetNamespace>
+    <pd:activity name="aplicarFormatos">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>60</pd:x>
+        <pd:y>412</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/aplicarFormatos.process</processName>
+        </config>
+        <pd:inputBindings>
+            <datosAFormatear>
+                <Rut>
+                    <xsl:value-of select="$Start/root/RutCliente"/>
+                </Rut>
+                <xsl:if test="$Start/root/transactionData/Monto">
+                    <Monto>
+                        <xsl:value-of select="$Start/root/transactionData/Monto"/>
+                    </Monto>
+                </xsl:if>
+                <xsl:if test="$Start/root/transactionData/Monto">
+                    <Monto>
+                        <xsl:value-of select="$Start/root/transactionData/CreditoConsumo/MontoLD"/>
+                    </Monto>
+                </xsl:if>
+                <xsl:if test="$Start/root/transactionData/NroCuenta">
+                    <Cuenta>
+                        <xsl:value-of select="$Start/root/transactionData/NroCuenta"/>
+                    </Cuenta>
+                </xsl:if>
+            </datosAFormatear>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Asigna BE Ok">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>1091</pd:x>
+        <pd:y>293</pd:y>
+        <config>
+            <variableName>resultado</variableName>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="responseStatusCode" select="concat($Parse-JSON/ns:ActivityOutputClass/root/pfx13:getChallengeResponse/pfx13:OUTPUT/pfx13:responseStatus/pfx13:code,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx14:authenticateChallengeResponse/pfx14:OUTPUT/pfx14:responseStatus/pfx14:code,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx15:userTokenActivation/pfx15:OUTPUT/pfx15:userTokenActivationResponse/pfx15:responseStatus/pfx15:code,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx2:transactionStatusResponse/pfx2:OUTPUT/pfx2:responseStatus/pfx2:code,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx7:userTokenList/pfx7:OUTPUT/pfx7:userTokenListResponse/pfx7:responseStatus/pfx7:code)"/>
+            <xsl:variable name="responseStatusDescription" select="concat($Parse-JSON/ns:ActivityOutputClass/root/pfx13:getChallengeResponse/pfx13:OUTPUT/pfx13:responseStatus/pfx13:description,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx14:authenticateChallengeResponse/pfx14:OUTPUT/pfx14:responseStatus/pfx14:description,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx15:userTokenActivation/pfx15:OUTPUT/pfx15:userTokenActivationResponse/pfx15:responseStatus/pfx15:description,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx2:transactionStatusResponse/pfx2:OUTPUT/pfx2:responseStatus/pfx2:description,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx7:userTokenList/pfx7:OUTPUT/pfx7:userTokenListResponse/pfx7:responseStatus/pfx7:description)"/>
+            <xsl:variable name="DESERR" select="concat($Parse-JSON/ns:ActivityOutputClass/root/pfx13:getChallengeResponse/pfx13:INFO/pfx13:DESERR,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx14:authenticateChallengeResponse/pfx14:INFO/pfx14:DESERR,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx15:userTokenActivation/pfx15:INFO/pfx15:DESERR,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx2:transactionStatusResponse/pfx2:INFO/pfx2:DESERR,&#xA;$Parse-JSON/ns:ActivityOutputClass/root/pfx7:userTokenList/pfx7:INFO/pfx7:DESERR)"/>
+            <root>
+                <elemento>
+                    <xsl:value-of select="'soap'"/>
+                </elemento>
+                <xsl:choose>
+                    <xsl:when test="$responseStatusCode=''">
+                        <ns4:Informacion>
+                            <ns4:Codigo>
+                                <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                            </ns4:Codigo>
+                            <ns4:Resultado>
+                                <xsl:value-of select="$DESERR"/>
+                            </ns4:Resultado>
+                            <ns4:Mensaje>
+                                <xsl:value-of select="''"/>
+                            </ns4:Mensaje>
+                        </ns4:Informacion>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:variable name="varResponseStatus" select="number($responseStatusCode)"/>
+                        <xsl:variable name="varCodigo" select="if ($varResponseStatus=0) then $_globalVariables/ns1:GlobalVariables/INFO/CodigoOk else $_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                        <xsl:variable name="varDescription" select="concat($varResponseStatus, ': ', $responseStatusDescription)"/>
+                        <ns4:Informacion>
+                            <ns4:Codigo>
+                                <xsl:value-of select="$varCodigo"/>
+                            </ns4:Codigo>
+                            <ns4:Resultado>
+                                <xsl:value-of select="$varDescription"/>
+                            </ns4:Resultado>
+                            <xsl:choose>
+                                <xsl:when test="$varResponseStatus=0">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Operación realizada correctamente'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=101">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Usuario no existe'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=404">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Respuesta invalida'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=405">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Respuesta inválida. Usuario bloqueado'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=407">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Usuario no tiene tokens'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=411">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Usuario marco la transacción como Dudosa'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=412">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Usuario marco la transacción como Cancelada'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=413">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Respuesta inválida'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=414">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Los datos de la transacción no concuerdan'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=415">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Los datos de la transacción no concuerdan, usuario bloqueado'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:when test="$varResponseStatus=420">
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="'Usuario bloqueado'"/>
+                                    </ns4:Mensaje>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <ns4:Mensaje>
+                                        <xsl:value-of select="$responseStatusDescription"/>
+                                    </ns4:Mensaje>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </ns4:Informacion>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <param>
+                    <xsl:value-of select="concat(&#xA;'[responseStatusCode]: ',$responseStatusCode,&#xA;' [responseStatusDescription]: ',$responseStatusDescription,&#xA;' [DESERR]: ',$DESERR,&#xA;' [number($responseStatusCode)]: ',number($responseStatusCode),&#xA;' [varCodigo]: ',if (number($responseStatusCode)=0) then $_globalVariables/ns1:GlobalVariables/INFO/CodigoOk else $_globalVariables/ns1:GlobalVariables/INFO/CodigoError,&#xA;' [varDescription]: ',concat(number($responseStatusCode), ': ', $responseStatusDescription)&#xA;)"/>
+                </param>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Asigna Catch">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>554</pd:x>
+        <pd:y>524</pd:y>
+        <config>
+            <variableName>resultado</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <elemento>
+                    <xsl:value-of select="'Catch'"/>
+                </elemento>
+                <xsl:copy-of select="$CatchAtomico/root/ns4:Informacion"/>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Asigna CDE">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>1152</pd:x>
+        <pd:y>198</pd:y>
+        <config>
+            <variableName>resultado</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <elemento>
+                    <xsl:value-of select="'ControlDeErrores'"/>
+                </elemento>
+                <xsl:copy-of select="$ControlDeErrores/ns4:Informacion"/>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Asigna Error">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>910</pd:x>
+        <pd:y>197</pd:y>
+        <config>
+            <variableName>resultado</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <elemento>
+                    <xsl:value-of select="'Error'"/>
+                </elemento>
+                <ns4:Informacion>
+                    <ns4:Codigo>
+                        <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                    </ns4:Codigo>
+                    <ns4:Resultado>
+                        <xsl:value-of select="$_error/ns2:ErrorReport/StackTrace"/>
+                    </ns4:Resultado>
+                    <ns4:Mensaje>
+                        <xsl:value-of select="$_error/ns2:ErrorReport/Msg"/>
+                    </ns4:Mensaje>
+                </ns4:Informacion>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Asigna GLH Ok">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>883</pd:x>
+        <pd:y>424</pd:y>
+        <config>
+            <variableName>resultado</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <elemento>
+                    <xsl:value-of select="'GrabaLogHob'"/>
+                </elemento>
+                <xsl:copy-of select="$GrabaLogHob/ns4:Informacion"/>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>341</pd:x>
+        <pd:y>524</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <fault>localname=ActivityTimedOutException namespace=http://schemas.tibco.com/bw/pe/plugin/5.0/exceptions</fault>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="CatchAtomico">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>448</pd:x>
+        <pd:y>525</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/Catch.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Atomico>
+                    <xsl:value-of select="$Map-Entrada/root/servicioAtomico"/>
+                </Atomico>
+                <Catch>
+                    <xsl:copy-of select="$Catch/exceptiondata"/>
+                </Catch>
+                <_error>
+                    <xsl:copy-of select="$_error/ns2:ErrorReport"/>
+                </_error>
+                <xsl:choose xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                    <xsl:when test="string($GrabaLogHob/ns4:Informacion)!=''">
+                        <xsl:copy-of select="$GrabaLogHob/ns4:Informacion"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="$resultado/root/ns4:Informacion"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <InfoLogHob>
+                    <GrabaLogHob>
+                        <xsl:value-of select="string($GrabaLogHob/ns4:Informacion)=''"/>
+                    </GrabaLogHob>
+                    <TramaEntrada>
+                        <xsl:copy-of select="$Map-Entrada/root/request"/>
+                    </TramaEntrada>
+                    <TramaSalida>
+                        <xsl:copy-of select="$REST-Soft-Token/ns:RESTOutput"/>
+                    </TramaSalida>
+                    <AtomicoOk>
+                        <xsl:value-of select="$resultado/root/elemento='soap'"/>
+                    </AtomicoOk>
+                </InfoLogHob>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ControlDeErrores">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1035</pd:x>
+        <pd:y>197</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/ControlDeErrores.process</processName>
+        </config>
+        <pd:inputBindings>
+            <xsl:copy-of select="$_error/ns2:ErrorReport"/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EscribeEnElLog">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>514</pd:x>
+        <pd:y>292</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns2:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="'Endpoint'"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="$Map-Entrada/root/endPoint"/>
+                    </mensaje>
+                </Mensaje>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="'Atomico'"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="$Map-Entrada/root/servicioAtomico"/>
+                    </mensaje>
+                </Mensaje>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="'Entrada'"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="tib:render-xml($Map-Entrada/root/request/*, true(), false())"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="EscribeEnElLog Resp REST">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>899</pd:x>
+        <pd:y>301</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/EscribeEnElLog.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Proceso>
+                    <xsl:value-of select="BW:getCurrentProcessName($_processContext/ns2:ProcessContext/ProcessId)"/>
+                </Proceso>
+                <Mensaje>
+                    <titulo>
+                        <xsl:value-of select="concat('Respuesta: ',$Map-Entrada/root/servicioAtomico)"/>
+                    </titulo>
+                    <mensaje>
+                        <xsl:value-of select="tib:render-xml($REST-Soft-Token/ns:RESTOutput, true(), false())"/>
+                    </mensaje>
+                </Mensaje>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Get Datos Cabecera">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>174</pd:x>
+        <pd:y>290</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/InfoCabecera.jobsharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="GrabaLogHob">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>1192</pd:x>
+        <pd:y>423</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/GrabaLogHob.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Atomico>
+                    <xsl:value-of select="$Map-Entrada/root/servicioAtomico"/>
+                </Atomico>
+                <TramaEntrada>
+                    <xsl:copy-of select="$Map-Entrada/root/request"/>
+                </TramaEntrada>
+                <TramaSalida>
+                    <xsl:copy-of select="$REST-Soft-Token/ns:RESTOutput"/>
+                </TramaSalida>
+                <ResultadoAtomico>
+                    <xsl:value-of select="not(exists($ControlDeErrores/ns4:Informacion))"/>
+                </ResultadoAtomico>
+                <xsl:copy-of select="$resultado/root/ns4:Informacion"/>
+                <UsaMsjUsr>
+                    <xsl:value-of select="$resultado/root/ns4:Informacion/ns4:Mensaje!=''"/>
+                </UsaMsjUsr>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Entrada">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>354</pd:x>
+        <pd:y>291</pd:y>
+        <config>
+            <element>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="endPoint" type="xsd:string"/>
+                            <xsd:element name="servicioAtomico" type="xsd:string"/>
+                            <xsd:element name="request">
+                                <xsd:complexType>
+                                    <xsd:choice minOccurs="0">
+                                        <xsd:element ref="pfx13:getChallengeRequest"/>
+                                        <xsd:element ref="pfx14:authenticateChallengeRequest"/>
+                                        <xsd:element ref="pfx15:userTokenActivationRequest"/>
+                                        <xsd:element ref="pfx2:transactionStatusRequest"/>
+                                        <xsd:element ref="pfx7:userTokenListRequest"/>
+                                        <xsd:element ref="ns4:Informacion"/>
+                                    </xsd:choice>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="Endpoint" select="$_globalVariables/ns1:GlobalVariables/WSENDPOINT/RESTJSON/AppGenericoGeneralREST"/>
+            <xsl:variable xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="ChildResource" select="if (exists($Start/root/userTokenActivation)) then 'tokenActivation' &#xA;else if (exists($Start/root/getChallenge)) then 'solicitudDesafio'&#xA;else if (exists($Start/root/authenticateChallenge)) then 'autenticacion' &#xA;else if (exists($Start/root/transactionStatus)) then 'estadoTransaccion'&#xA;else if (exists($Start/root/userTokenList)) then 'tokensCliente' else ''"/>
+            <xsl:variable xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="Resource" select="concat('/softToken/consulta/',$ChildResource)"/>
+            <root>
+                <endPoint>
+                    <xsl:value-of select="concat($Endpoint,$Resource)"/>
+                </endPoint>
+                <servicioAtomico>
+                    <xsl:value-of select="$ChildResource"/>
+                </servicioAtomico>
+                <request>
+                    <xsl:choose>
+                        <xsl:when test="exists($Start/root/getChallenge)">
+                            <pfx13:getChallengeRequest>
+                                <xsl:for-each select="$Get-Datos-Cabecera/cabecera">
+                                    <pfx13:Cabecera>
+                                        <pfx13:HOST>
+                                            <pfx13:USUARIO-ALT>
+                                                <xsl:value-of select="current()/HOST/USUARIO-ALT"/>
+                                            </pfx13:USUARIO-ALT>
+                                            <pfx13:TERMINAL-ALT>
+                                                <xsl:value-of select="current()/HOST/TERMINAL-ALT"/>
+                                            </pfx13:TERMINAL-ALT>
+                                            <pfx13:CANAL-ID>
+                                                <xsl:value-of select="current()/HOST/CANAL-ID"/>
+                                            </pfx13:CANAL-ID>
+                                        </pfx13:HOST>
+                                        <pfx13:CanalFisico>
+                                            <xsl:value-of select="CanalFisico"/>
+                                        </pfx13:CanalFisico>
+                                        <pfx13:CanalLogico>
+                                            <xsl:value-of select="CanalLogico"/>
+                                        </pfx13:CanalLogico>
+                                        <pfx13:RutCliente>
+                                            <xsl:value-of select="RutCliente"/>
+                                        </pfx13:RutCliente>
+                                        <pfx13:RutUsuario>
+                                            <xsl:value-of select="RutUsuario"/>
+                                        </pfx13:RutUsuario>
+                                        <pfx13:IpCliente>
+                                            <xsl:value-of select="IpCliente"/>
+                                        </pfx13:IpCliente>
+                                        <pfx13:InfoDispositivo>
+                                            <xsl:value-of select="InfoDispositivo"/>
+                                        </pfx13:InfoDispositivo>
+                                    </pfx13:Cabecera>
+                                </xsl:for-each>
+                                <pfx13:Entrada>
+                                    <pfx13:userId>
+                                        <xsl:value-of select="concat('clientes/',$Start/root/RutCliente)"/>
+                                    </pfx13:userId>
+                                    <pfx13:challengeType>
+                                        <xsl:value-of select="if (count($Start/root/challengeType) >0) then &#xA;$Start/root/challengeType&#xA;else&#xA;'TOKEN_SIGN_ONLINE'"/>
+                                    </pfx13:challengeType>
+                                    <xsl:if test="exists($Map-transaction-Data/transactionData/tokenChallengeSummary)">
+                                        <xsl:if test="$Map-transaction-Data/transactionData/tokenChallengeSummary">
+                                            <pfx13:tokenChallengeSummary>
+                                                <xsl:value-of select="$Map-transaction-Data/transactionData/tokenChallengeSummary"/>
+                                            </pfx13:tokenChallengeSummary>
+                                        </xsl:if>
+                                    </xsl:if>
+                                    <pfx13:transactionData>
+                                        <xsl:for-each select="$Map-transaction-Data/transactionData/item">
+                                            <pfx13:item>
+                                                <pfx13:name>
+                                                    <xsl:value-of select="name"/>
+                                                </pfx13:name>
+                                                <pfx13:value>
+                                                    <xsl:value-of select="value"/>
+                                                </pfx13:value>
+                                            </pfx13:item>
+                                        </xsl:for-each>
+                                    </pfx13:transactionData>
+                                </pfx13:Entrada>
+                            </pfx13:getChallengeRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Start/root/authenticateChallenge)">
+                            <pfx14:authenticateChallengeRequest>
+                                <xsl:for-each select="$Get-Datos-Cabecera/cabecera">
+                                    <pfx14:Cabecera>
+                                        <pfx14:HOST>
+                                            <pfx14:USUARIO-ALT>
+                                                <xsl:value-of select="current()/HOST/USUARIO-ALT"/>
+                                            </pfx14:USUARIO-ALT>
+                                            <pfx14:TERMINAL-ALT>
+                                                <xsl:value-of select="current()/HOST/TERMINAL-ALT"/>
+                                            </pfx14:TERMINAL-ALT>
+                                            <pfx14:CANAL-ID>
+                                                <xsl:value-of select="current()/HOST/CANAL-ID"/>
+                                            </pfx14:CANAL-ID>
+                                        </pfx14:HOST>
+                                        <pfx14:CanalFisico>
+                                            <xsl:value-of select="CanalFisico"/>
+                                        </pfx14:CanalFisico>
+                                        <pfx14:CanalLogico>
+                                            <xsl:value-of select="CanalLogico"/>
+                                        </pfx14:CanalLogico>
+                                        <pfx14:RutCliente>
+                                            <xsl:value-of select="RutCliente"/>
+                                        </pfx14:RutCliente>
+                                        <pfx14:RutUsuario>
+                                            <xsl:value-of select="RutUsuario"/>
+                                        </pfx14:RutUsuario>
+                                        <pfx14:IpCliente>
+                                            <xsl:value-of select="IpCliente"/>
+                                        </pfx14:IpCliente>
+                                        <pfx14:InfoDispositivo>
+                                            <xsl:value-of select="InfoDispositivo"/>
+                                        </pfx14:InfoDispositivo>
+                                    </pfx14:Cabecera>
+                                </xsl:for-each>
+                                <pfx14:Entrada>
+                                    <pfx14:userId>
+                                        <xsl:value-of select="concat('clientes/',$Start/root/RutCliente)"/>
+                                    </pfx14:userId>
+                                    <xsl:if test="$Start/root/transactionId">
+                                        <pfx14:transactionId>
+                                            <xsl:value-of select="$Start/root/transactionId"/>
+                                        </pfx14:transactionId>
+                                    </xsl:if>
+                                    <pfx14:challengeType>
+                                        <xsl:value-of select="'TOKEN_SIGN_ONLINE'"/>
+                                    </pfx14:challengeType>
+                                    <pfx14:transactionData>
+                                        <xsl:for-each select="$Map-transaction-Data/transactionData/item">
+                                            <pfx14:item>
+                                                <pfx14:name>
+                                                    <xsl:value-of select="name"/>
+                                                </pfx14:name>
+                                                <pfx14:value>
+                                                    <xsl:value-of select="value"/>
+                                                </pfx14:value>
+                                            </pfx14:item>
+                                        </xsl:for-each>
+                                    </pfx14:transactionData>
+                                </pfx14:Entrada>
+                            </pfx14:authenticateChallengeRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Start/root/userTokenActivation)">
+                            <pfx15:userTokenActivationRequest>
+                                <xsl:for-each select="$Get-Datos-Cabecera/cabecera">
+                                    <pfx15:Cabecera>
+                                        <pfx15:HOST>
+                                            <pfx15:USUARIO-ALT>
+                                                <xsl:value-of select="current()/HOST/USUARIO-ALT"/>
+                                            </pfx15:USUARIO-ALT>
+                                            <pfx15:TERMINAL-ALT>
+                                                <xsl:value-of select="current()/HOST/TERMINAL-ALT"/>
+                                            </pfx15:TERMINAL-ALT>
+                                            <pfx15:CANAL-ID>
+                                                <xsl:value-of select="current()/HOST/CANAL-ID"/>
+                                            </pfx15:CANAL-ID>
+                                        </pfx15:HOST>
+                                        <pfx15:CanalFisico>
+                                            <xsl:value-of select="CanalFisico"/>
+                                        </pfx15:CanalFisico>
+                                        <pfx15:CanalLogico>
+                                            <xsl:value-of select="CanalLogico"/>
+                                        </pfx15:CanalLogico>
+                                        <pfx15:RutCliente>
+                                            <xsl:value-of select="RutCliente"/>
+                                        </pfx15:RutCliente>
+                                        <pfx15:RutUsuario>
+                                            <xsl:value-of select="RutUsuario"/>
+                                        </pfx15:RutUsuario>
+                                        <pfx15:IpCliente>
+                                            <xsl:value-of select="IpCliente"/>
+                                        </pfx15:IpCliente>
+                                        <pfx15:InfoDispositivo>
+                                            <xsl:value-of select="InfoDispositivo"/>
+                                        </pfx15:InfoDispositivo>
+                                    </pfx15:Cabecera>
+                                </xsl:for-each>
+                                <pfx15:Entrada>
+                                    <pfx15:userId>
+                                        <xsl:value-of select="concat('clientes/',$Start/root/RutCliente)"/>
+                                    </pfx15:userId>
+                                </pfx15:Entrada>
+                            </pfx15:userTokenActivationRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Start/root/transactionStatus)">
+                            <pfx2:transactionStatusRequest>
+                                <xsl:for-each select="$Get-Datos-Cabecera/cabecera">
+                                    <pfx2:Cabecera>
+                                        <pfx2:HOST>
+                                            <pfx2:USUARIO-ALT>
+                                                <xsl:value-of select="current()/HOST/USUARIO-ALT"/>
+                                            </pfx2:USUARIO-ALT>
+                                            <pfx2:TERMINAL-ALT>
+                                                <xsl:value-of select="current()/HOST/TERMINAL-ALT"/>
+                                            </pfx2:TERMINAL-ALT>
+                                            <pfx2:CANAL-ID>
+                                                <xsl:value-of select="current()/HOST/CANAL-ID"/>
+                                            </pfx2:CANAL-ID>
+                                        </pfx2:HOST>
+                                        <pfx2:CanalFisico>
+                                            <xsl:value-of select="CanalFisico"/>
+                                        </pfx2:CanalFisico>
+                                        <pfx2:CanalLogico>
+                                            <xsl:value-of select="CanalLogico"/>
+                                        </pfx2:CanalLogico>
+                                        <pfx2:RutCliente>
+                                            <xsl:value-of select="RutCliente"/>
+                                        </pfx2:RutCliente>
+                                        <pfx2:RutUsuario>
+                                            <xsl:value-of select="RutUsuario"/>
+                                        </pfx2:RutUsuario>
+                                        <pfx2:IpCliente>
+                                            <xsl:value-of select="IpCliente"/>
+                                        </pfx2:IpCliente>
+                                        <pfx2:InfoDispositivo>
+                                            <xsl:value-of select="InfoDispositivo"/>
+                                        </pfx2:InfoDispositivo>
+                                    </pfx2:Cabecera>
+                                </xsl:for-each>
+                                <pfx2:Entrada>
+                                    <pfx2:transactionId>
+                                        <xsl:value-of select="$Start/root/transactionId"/>
+                                    </pfx2:transactionId>
+                                </pfx2:Entrada>
+                            </pfx2:transactionStatusRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Start/root/userTokenList)">
+                            <pfx7:userTokenListRequest>
+                                <xsl:for-each select="$Get-Datos-Cabecera/cabecera">
+                                    <pfx7:Cabecera>
+                                        <pfx7:HOST>
+                                            <pfx7:USUARIO-ALT>
+                                                <xsl:value-of select="current()/HOST/USUARIO-ALT"/>
+                                            </pfx7:USUARIO-ALT>
+                                            <pfx7:TERMINAL-ALT>
+                                                <xsl:value-of select="current()/HOST/TERMINAL-ALT"/>
+                                            </pfx7:TERMINAL-ALT>
+                                            <pfx7:CANAL-ID>
+                                                <xsl:value-of select="current()/HOST/CANAL-ID"/>
+                                            </pfx7:CANAL-ID>
+                                        </pfx7:HOST>
+                                        <pfx7:CanalFisico>
+                                            <xsl:value-of select="CanalFisico"/>
+                                        </pfx7:CanalFisico>
+                                        <pfx7:CanalLogico>
+                                            <xsl:value-of select="CanalLogico"/>
+                                        </pfx7:CanalLogico>
+                                        <pfx7:RutCliente>
+                                            <xsl:value-of select="RutCliente"/>
+                                        </pfx7:RutCliente>
+                                        <pfx7:RutUsuario>
+                                            <xsl:value-of select="RutUsuario"/>
+                                        </pfx7:RutUsuario>
+                                        <pfx7:IpCliente>
+                                            <xsl:value-of select="IpCliente"/>
+                                        </pfx7:IpCliente>
+                                        <pfx7:InfoDispositivo>
+                                            <xsl:value-of select="InfoDispositivo"/>
+                                        </pfx7:InfoDispositivo>
+                                    </pfx7:Cabecera>
+                                </xsl:for-each>
+                                <pfx7:Entrada>
+                                    <pfx7:userId>
+                                        <xsl:value-of select="concat('clientes/',$Start/root/RutCliente)"/>
+                                    </pfx7:userId>
+                                </pfx7:Entrada>
+                            </pfx7:userTokenListRequest>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <ns4:Informacion>
+                                <ns4:Codigo>
+                                    <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoError"/>
+                                </ns4:Codigo>
+                                <ns4:Resultado>
+                                    <xsl:value-of select="concat('Job-',$_processContext/ns2:ProcessContext/ProcessId,';',$Get-Componentes-y-Codigos-DWH/codigosDWH/Definicion[Atomico=$ChildResource]/BackEnd,&#xA;' ',$_globalVariables/ns1:GlobalVariables/INFO/CodigoError,' Funcionalidad no informada')"/>
+                                </ns4:Resultado>
+                                <ns4:Mensaje>
+                                    <xsl:value-of select="'Funcionalidad no indicada'"/>
+                                </ns4:Mensaje>
+                            </ns4:Informacion>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </request>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map transaction Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>214</pd:x>
+        <pd:y>422</pd:y>
+        <config>
+            <element>
+                <xsd:element name="transactionData">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="estado" type="xsd:string"/>
+                            <xsd:element name="tokenChallengeSummary" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="name" type="xsd:string"/>
+                                        <xsd:element name="value" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <transactionData>
+                <estado>
+                    <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/INFO/CodigoOk"/>
+                </estado>
+                <!--Titulo-->
+                <tokenChallengeSummary>
+                    <xsl:value-of select="'CREDITO DE CONSUMO'"/>
+                </tokenChallengeSummary>
+                <xsl:if test="not(exists($Start/root/transactionData/CreditoConsumo) )">
+                    <item>
+                        <name>
+                            <xsl:value-of select="'Titulo'"/>
+                        </name>
+                        <value>
+                            <xsl:value-of select="''"/>
+                        </value>
+                    </item>
+                </xsl:if>
+                <xsl:if test="not(exists($Start/root/transactionData/CreditoConsumo) )">
+                    <item>
+                        <name>
+                            <xsl:value-of select="'&lt;B>Subtitulo'"/>
+                        </name>
+                        <value>
+                            <xsl:value-of select="''"/>
+                        </value>
+                    </item>
+                </xsl:if>
+                <!--Canal Autorización-->
+                <xsl:if test="not(exists($Start/root/transactionData/CreditoConsumo) )">
+                    <item>
+                        <name>
+                            <xsl:value-of select="'Canal Autorizacion'"/>
+                        </name>
+                        <value>
+                            <xsl:value-of select="''"/>
+                        </value>
+                    </item>
+                </xsl:if>
+                <item>
+                    <name>
+                        <xsl:value-of select="'&lt;T1>Origen'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="' '"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'Nombre'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="'Autorizar curse de Crédito de Consumo por'"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'&lt;B>Tipo de Cuenta'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="$aplicarFormatos/datosFormateados/Monto[1]"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'Numero Cuenta'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="'Más monto de Libre disponibilidad por'"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'&lt;B>RUT Origen'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="$aplicarFormatos/datosFormateados/Monto[2]"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'&lt;T2>Destino'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="'Cuenta de Abono'"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'Nombre Destino'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="$Start/root/transactionData/CreditoConsumo/Nombre"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'Tipo de Cuenta Destino'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="$Start/root/transactionData/TipoCuenta"/>
+                    </value>
+                </item>
+                <item>
+                    <name>
+                        <xsl:value-of select="'Numero Cuenta Destino'"/>
+                    </name>
+                    <value>
+                        <xsl:value-of select="$aplicarFormatos/datosFormateados/Cuenta[1]"/>
+                    </value>
+                </item>
+            </transactionData>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONParserActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONParserActivity</pd:resourceType>
+        <pd:x>998</pd:x>
+        <pd:y>293</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityOutputEditor>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:choice>
+                            <xsd:element ref="pfx13:getChallengeResponse"/>
+                            <xsd:element ref="pfx14:authenticateChallengeResponse"/>
+                            <xsd:element ref="pfx15:userTokenActivation"/>
+                            <xsd:element ref="pfx2:transactionStatusResponse"/>
+                            <xsd:element ref="pfx7:userTokenList"/>
+                        </xsd:choice>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityOutputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <jsonString>
+                    <xsl:value-of select="$REST-Soft-Token/ns:RESTOutput/msg"/>
+                </jsonString>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>667</pd:x>
+        <pd:y>291</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <removeRootElementForInput>true</removeRootElementForInput>
+            <ActivityInputEditor>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:choice>
+                            <xsd:element ref="pfx13:getChallengeRequest"/>
+                            <xsd:element ref="pfx14:authenticateChallengeRequest"/>
+                            <xsd:element ref="pfx15:userTokenActivationRequest"/>
+                            <xsd:element ref="pfx2:transactionStatusRequest"/>
+                            <xsd:element ref="pfx7:userTokenListRequest"/>
+                        </xsd:choice>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <root>
+                    <xsl:choose>
+                        <xsl:when test="exists($Map-Entrada/root/request/pfx13:getChallengeRequest)">
+                            <pfx13:getChallengeRequest>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx13:getChallengeRequest/pfx13:Cabecera"/>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx13:getChallengeRequest/pfx13:Entrada"/>
+                            </pfx13:getChallengeRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Map-Entrada/root/request/pfx14:authenticateChallengeRequest)">
+                            <pfx14:authenticateChallengeRequest>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx14:authenticateChallengeRequest/pfx14:Cabecera"/>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx14:authenticateChallengeRequest/pfx14:Entrada"/>
+                            </pfx14:authenticateChallengeRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Map-Entrada/root/request/pfx15:userTokenActivationRequest)">
+                            <pfx15:userTokenActivationRequest>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx15:userTokenActivationRequest/pfx15:Cabecera"/>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx15:userTokenActivationRequest/pfx15:Entrada"/>
+                            </pfx15:userTokenActivationRequest>
+                        </xsl:when>
+                        <xsl:when test="exists($Map-Entrada/root/request/pfx2:transactionStatusRequest)">
+                            <pfx2:transactionStatusRequest>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx2:transactionStatusRequest/pfx2:Cabecera"/>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx2:transactionStatusRequest/pfx2:Entrada"/>
+                            </pfx2:transactionStatusRequest>
+                        </xsl:when>
+                        <!--userTokenListRequest-->
+                        <xsl:otherwise>
+                            <pfx7:userTokenListRequest>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx7:userTokenListRequest/pfx7:Cabecera"/>
+                                <xsl:copy-of select="$Map-Entrada/root/request/pfx7:userTokenListRequest/pfx7:Entrada"/>
+                            </pfx7:userTokenListRequest>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </root>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="REST Soft Token">
+        <pd:type>com.tibco.plugin.json.activities.RestActivity</pd:type>
+        <pd:resourceType>ae.activities.RestActivity</pd:resourceType>
+        <pd:x>784</pd:x>
+        <pd:y>292</pd:y>
+        <config>
+            <enableProtocolUI>None</enableProtocolUI>
+            <restMethodUI>POST</restMethodUI>
+            <restResponseType>JSON</restResponseType>
+            <authChoiceUI>No Authentication</authChoiceUI>
+            <WADLPaths/>
+            <WADLBaseURL/>
+            <restMethodIDUI/>
+            <WADLReference/>
+            <WADLContent/>
+            <trustAllHostUI>true</trustAllHostUI>
+            <richOutputEnableUI>false</richOutputEnableUI>
+            <restURI>https://viphbusi3-tbint1-i.cl.bsch:11210/softToken/consulta/solicitudDesafio</restURI>
+            <restInputReferNode>
+                <xsd:element name="Parameters">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Query" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="param" type="xsd:string" minOccurs="0"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="Header" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="param" type="xsd:string" minOccurs="0"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="Body" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="Form" minOccurs="0">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="param" type="xsd:string" minOccurs="0"/>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="Text" minOccurs="0">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="content" type="xsd:string" minOccurs="0"/>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="Binary" minOccurs="0">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="content" type="xsd:base64Binary" minOccurs="0"/>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="Multipart" minOccurs="0" maxOccurs="unbounded">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="content-disposition" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="filename" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="content-type" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="content-id" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="content" minOccurs="0">
+                                                        <xsd:complexType>
+                                                            <xsd:choice>
+                                                                <xsd:element name="binary" type="xsd:base64Binary"/>
+                                                                <xsd:element name="text" type="xsd:string"/>
+                                                                <xsd:element name="fileName" type="xsd:string"/>
+                                                            </xsd:choice>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </restInputReferNode>
+            <restOutputReferNode>
+                <xsd:element name="header">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Server" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Allow" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Date" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Length" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Encoding" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Range" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Last-Modifie" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </restOutputReferNode>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInput>
+                <URI>
+                    <xsl:value-of select="$Map-Entrada/root/endPoint"/>
+                </URI>
+                <ns:Parameters>
+                    <Body>
+                        <Text>
+                            <type>
+                                <xsl:value-of select="'application/json'"/>
+                            </type>
+                            <content>
+                                <xsl:value-of select="$Render-JSON/ns:ActivityOutputClass/jsonString"/>
+                            </content>
+                        </Text>
+                    </Body>
+                </ns:Parameters>
+            </ns:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Get Componentes y Codigos DWH">
+        <pd:type>com.tibco.pe.core.GetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.getSharedVariable</pd:resourceType>
+        <pd:x>351</pd:x>
+        <pd:y>422</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/CodigosDWH.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Set Componentes y Codigos DWH">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>560</pd:x>
+        <pd:y>420</pd:y>
+        <config>
+            <variableConfig>/Resources/SharedVariable/CodigosDWH.sharedvariable</variableConfig>
+        </config>
+        <pd:inputBindings>
+            <codigosDWH>
+                <Definicion>
+                    <Atomico>
+                        <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="''"/>
+                    </Atomico>
+                    <BackEnd>
+                        <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="''"/>
+                    </BackEnd>
+                    <CodDWH>
+                        <xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" select="''"/>
+                    </CodDWH>
+                </Definicion>
+            </codigosDWH>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>REST Soft Token</pd:to>
+        <pd:xpathDescription/>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse JSON</pd:from>
+        <pd:to>Asigna BE Ok</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>REST Soft Token</pd:from>
+        <pd:to>EscribeEnElLog Resp REST</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>REST Soft Token</pd:from>
+        <pd:to>Asigna Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Asigna Error</pd:from>
+        <pd:to>ControlDeErrores</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ControlDeErrores</pd:from>
+        <pd:to>Asigna CDE</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Asigna BE Ok</pd:from>
+        <pd:to>GrabaLogHob</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GrabaLogHob</pd:from>
+        <pd:to>Asigna GLH Ok</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Asigna GLH Ok</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Asigna CDE</pd:from>
+        <pd:to>GrabaLogHob</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog Resp REST</pd:from>
+        <pd:to>Parse JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>CatchAtomico</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CatchAtomico</pd:from>
+        <pd:to>Asigna Catch</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Asigna Catch</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Datos Cabecera</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Datos Cabecera</pd:from>
+        <pd:to>Map Entrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map transaction Data</pd:from>
+        <pd:to>Map Entrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Entrada</pd:from>
+        <pd:to>EscribeEnElLog</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>aplicarFormatos</pd:from>
+        <pd:to>Map transaction Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Componentes y Codigos DWH</pd:from>
+        <pd:to>Set Componentes y Codigos DWH</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Componentes y Codigos DWH</pd:from>
+        <pd:to>Map Entrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Set Componentes y Codigos DWH</pd:from>
+        <pd:to>Map Entrada</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>EscribeEnElLog</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Error</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($Map-Entrada/root/request/ns4:Informacion)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map transaction Data</pd:from>
+        <pd:to>Get Componentes y Codigos DWH</pd:to>
+        <pd:xpathDescription>Error</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Map-transaction-Data/transactionData/estado=$_globalVariables/ns1:GlobalVariables/INFO/CodigoError</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Datos Cabecera</pd:from>
+        <pd:to>aplicarFormatos</pd:to>
+        <pd:xpathDescription>transactionData</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($Start/root/transactionData)</pd:xpath>
+    </pd:transition>
+    <pd:label>
+        <pd:name>Label</pd:name>
+        <pd:description>getChallenge = solicitar un desafío para un usuario
+               userId = clientes/[RUT LARGO 11 CON CEROS A LA IZQ]
+               challengeType = TOKEN_SIGN_ONLINE
+               tokenChallengeSummary = TEXTO OPCIONAL QUE SE PODRÍA MOSTRAR - FUNCIONALIDAD QUE REQUIERE EL DESAFÍO
+               transactionData = MAPA DE DATOS
+
+authenticateChallenge = consulta el estado de la validación del desafío solicitado previamente
+               Los campos userId, challengeType y transactionData se deben informar tal cual se informaron en el método getChallenge
+               transactionId = LO RETORNAR EL getChallenge</pd:description>
+        <pd:x>393</pd:x>
+        <pd:y>80</pd:y>
+        <pd:width>784</pd:width>
+        <pd:height>159</pd:height>
+        <pd:fontColor>-16777216</pd:fontColor>
+        <pd:color>-52</pd:color>
+        <pd:type>solid</pd:type>
+        <pd:thickness>0</pd:thickness>
+        <pd:fade>false</pd:fade>
+    </pd:label>
+</pd:ProcessDefinition>

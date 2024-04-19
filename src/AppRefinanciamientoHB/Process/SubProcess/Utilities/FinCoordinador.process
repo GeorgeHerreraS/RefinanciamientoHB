@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/ConsultaDeudaConvenio.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:pfx2="http://itg.isban.cl/Process/Resources/Schemas/Informacion.xsd" xmlns:pfx3="http://com.latinia/lsubscribers/storage" xmlns:pfx4="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/json">
+    <xsd:import namespace="http://com.latinia/lsubscribers/storage" schemaLocation="/WebServices/Latinia/StorageService_schema1.xsd"/>
+    <xsd:import namespace="http://itg.isban.cl/AppPersonas2.0/Resources/Schemas/ConsultaDeudaConvenio.xsd" schemaLocation="/Resources/Schemas/PEL_ConsultaDeudaConvenio.xsd"/>
+    <xsd:import namespace="http://itg.santander.cl/AppRefinanciamientoHB/Resources/Schemas/Informacion.xsd" schemaLocation="/Resources/Schemas/Informacion.xsd"/>
+    <pd:name>Process/SubProcess/Utilities/FinCoordinador.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx4:Informacion"/>
+                    <xsd:choice>
+                        <xsd:element name="Salida">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="response_json" type="xsd:string"/>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:copy-of select="$GrabaLogHob-Fin-Ok/pfx4:Informacion"/>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx4:Informacion"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>529</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/FinCoordinador</pd:targetNamespace>
+    <pd:activity name="GrabaLogHob Fin Ok">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>324</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/Process/SubProcess/Utilities/GrabaLogHob.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <FinCoordinador>
+                    <xsl:value-of select="true()"/>
+                </FinCoordinador>
+                <TramaEntrada/>
+                <xsl:choose>
+                    <xsl:when test="string($Start/root/Salida)">
+                        <TramaSalida>
+                            <xsl:copy-of select="$Map-Data/Salida/*"/>
+                        </TramaSalida>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="$Start/root/response_json"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <ResultadoAtomico>
+                    <xsl:value-of select="true()"/>
+                </ResultadoAtomico>
+                <xsl:copy-of select="$Start/root/pfx4:Informacion"/>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>159</pd:x>
+        <pd:y>120</pd:y>
+        <config>
+            <element>
+                <xsd:element name="Salida">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:any processContents="skip"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <Salida>
+                <xsl:copy-of select="$Start/root/Salida"/>
+            </Salida>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>GrabaLogHob Fin Ok</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:xpathDescription>Salida</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>exists($Start/root/Salida)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>GrabaLogHob Fin Ok</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>GrabaLogHob Fin Ok</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

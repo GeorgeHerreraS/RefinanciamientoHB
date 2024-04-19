@@ -1,0 +1,37 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>AppGenericoGeneralREST</name>
+			<value>https://viphbusi3-tbint1-i.cl.bsch:11210</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1570818645231</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>ServiceName</name>
+			<value>AppRefinanciamientoHB</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1534968192044</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>UriAltContrataCreditoConsumo</name>
+			<value>Services/AppRefinanciamientoHB/wsCL1CO-ALTContrataCreditoConsumo</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1548264732537</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>UriEnpoint</name>
+			<value>http://localhost</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1571165863153</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

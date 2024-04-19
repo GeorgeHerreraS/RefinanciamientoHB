@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource>
+    <name>MqConnectLogHob</name>
+    <resourceType>plugin.bwmq.ConnectionResource</resourceType>
+    <config>
+        <version>7.06.00</version>
+        <qmanagerbindingmode>remote</qmanagerbindingmode>
+        <host>%%LOGHOB/Host%%</host>
+        <qmanagerport>%%LOGHOB/Puerto%%</qmanagerport>
+        <qmanager/>
+        <pooled>true</pooled>
+        <qmanageractive>500</qmanageractive>
+        <qmanagerunused>20</qmanagerunused>
+        <qmanagertimeout>30</qmanagertimeout>
+        <tls>false</tls>
+        <keyorident>Keystore</keyorident>
+        <hdrcomp>false</hdrcomp>
+        <msgcomp>msgcomp_none</msgcomp>
+        <serverchannel>%%LOGHOB/Channel%%</serverchannel>
+    </config>
+</BWSharedResource>
